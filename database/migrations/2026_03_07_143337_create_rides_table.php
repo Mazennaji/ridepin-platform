@@ -13,6 +13,24 @@ return new class extends Migration
     {
         Schema::create('rides', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('rider_id')->constrained('users');
+            $table->foreignId('driver_id')->nullable()->constrained('users');
+
+            $table->string('pickup_location');
+            $table->string('dropoff_location');
+
+            $table->decimal('pickup_latitude', 10, 7);
+            $table->decimal('pickup_longitude', 10, 7);
+
+            $table->decimal('dropoff_latitude', 10, 7);
+            $table->decimal('dropoff_longitude', 10, 7);
+
+            $table->decimal('fare')->nullable();
+            $table->decimal('distance')->nullable();
+
+            $table->string('status')->default('pending');
+
             $table->timestamps();
         });
     }
