@@ -4,63 +4,49 @@ namespace App\Policies;
 
 use App\Models\Ride;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class RidePolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        //
+        return $user->isAdmin() || $user->isRider() || $user->isDriver();
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, Ride $ride): bool
     {
-        //
+        return $user->isAdmin()
+            || $ride->rider_id === $user->id
+            || $ride->driver_id === $user->id;
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
-        //
+        return $user->isRider();
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Ride $ride): bool
+    public function cancel(User $user, Ride $ride): bool
     {
-        //
+        return $user->isRider()
+            && $ride->rider_id === $user->id
+            && $ride->status === 'pending';
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Ride $ride): bool
+    public function accept(User $user, Ride $ride): bool
     {
-        //
+        return $user->isDriver() && $ride->status === 'pending';
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Ride $ride): bool
+    public function start(User $user, Ride $ride): bool
     {
-        //
+        return $user->isDriver()
+            && $ride->driver_id === $user->id
+            && $ride->status === 'accepted';
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Ride $ride): bool
+    public function complete(User $user, Ride $ride): bool
     {
-        //
+        return $user->isDriver()
+            && $ride->driver_id === $user->id
+            && $ride->status === 'started';
     }
 }

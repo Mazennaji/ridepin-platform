@@ -15,7 +15,12 @@ class DriverProfile extends Model
         'current_latitude',
         'current_longitude',
         'is_available',
-        'verification_status'
+        'verification_status',
+    ];
+
+    protected $casts = [
+        'is_available' => 'boolean',
+        'verification_status' => 'boolean',
     ];
 
     public function user()

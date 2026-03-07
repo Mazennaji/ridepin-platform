@@ -17,7 +17,7 @@ class Ride extends Model
         'dropoff_longitude',
         'fare',
         'distance',
-        'status'
+        'status',
     ];
 
     public function rider()
