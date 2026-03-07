@@ -6,23 +6,20 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRideRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check() && auth()->user()->isRider();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'pickup_location' => ['required', 'string', 'max:255'],
+            'dropoff_location' => ['required', 'string', 'max:255'],
+            'pickup_latitude' => ['required', 'numeric'],
+            'pickup_longitude' => ['required', 'numeric'],
+            'dropoff_latitude' => ['required', 'numeric'],
+            'dropoff_longitude' => ['required', 'numeric'],
         ];
     }
 }
