@@ -1,66 +1,322 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 🚕 RidePin
 
-## About Laravel
+**A full-stack ride-booking platform built for the real world.**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Connect riders and drivers through secure APIs, real-time ride lifecycle management,<br/>and an intuitive cross-platform mobile experience.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+[![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Filament](https://img.shields.io/badge/Filament-FDAE4B?style=for-the-badge&logo=data:image/svg+xml;base64,&logoColor=white)](https://filamentphp.com)
+[![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
+[![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+<br/>
 
-## Learning Laravel
+<img src="./docs/ridepin-preview.png" width="720" alt="RidePin Platform Preview"/>
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+<br/>
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+[Getting Started](#-getting-started) · [Features](#-features) · [Architecture](#-architecture) · [API Reference](#-api-reference) · [Roadmap](#-roadmap)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+</div>
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🎯 Overview
 
-### Premium Partners
+RidePin is a production-style ride-hailing platform demonstrating end-to-end software engineering — from database design and RESTful APIs to mobile UI and admin dashboards.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Built with a **three-tier architecture**:
 
-## Contributing
+| Layer | Technology | Purpose |
+|:------|:-----------|:--------|
+| **Backend** | Laravel + Sanctum | RESTful API, authentication, business logic |
+| **Mobile** | Flutter + Provider | Cross-platform rider & driver experience |
+| **Admin** | Filament | Dashboard for platform management & analytics |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## ✨ Features
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+<table>
+<tr>
+<td width="33%" valign="top">
 
-## Security Vulnerabilities
+### 🚗 Rider Experience
+- Create & cancel ride requests
+- Browse full ride history
+- Rate drivers after completion
+- Real-time ride status updates
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+</td>
+<td width="33%" valign="top">
 
-## License
+### 🧑‍✈️ Driver Experience
+- Toggle availability on/off
+- View nearby pending requests
+- Accept → Start → Complete flow
+- Track completed ride earnings
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+</td>
+<td width="33%" valign="top">
+
+### 🛡 Admin Panel
+- Full user & ride management
+- Transaction monitoring
+- Ratings & reviews oversight
+- Platform-wide statistics
+
+</td>
+</tr>
+</table>
+
+### 🔐 Security & Auth
+- **Token-based authentication** via Laravel Sanctum
+- **Role-based access control** — Rider, Driver, Admin
+- Bcrypt password hashing · Form Request validation · Protected route middleware · Centralized error handling
+
+---
+
+## 🏗 Architecture
+
+```
+RidePin/
+│
+├── 🔧 Backend (Laravel API)
+│   ├── app/             # Models, Controllers, Middleware, Policies
+│   ├── routes/          # API route definitions
+│   ├── database/        # Migrations, seeders, factories
+│   └── config/          # App & service configuration
+│
+├── 📱 Mobile (Flutter)
+│   └── mobile/ridepin/  # Dart source, screens, providers, services
+│
+└── 📊 Admin (Filament)
+    └── Integrated within Laravel backend
+```
+
+---
+
+## 📐 Database Schema
+
+<div align="center">
+
+```
+┌──────────┐    ┌──────────────────┐    ┌───────────────┐
+│  Roles   │◄───│      Users       │───►│Driver Profiles│
+└──────────┘    └────────┬─────────┘    └───────────────┘
+                         │
+              ┌──────────┴──────────┐
+              ▼                     ▼
+        ┌──────────┐         ┌──────────┐
+        │  Rides   │────────►│  Ratings  │
+        └────┬─────┘         └──────────┘
+             │
+             ▼
+      ┌──────────────┐    ┌──────────────────┐
+      │ Transactions │    │ Ride Status Logs  │
+      └──────────────┘    └──────────────────┘
+```
+
+</div>
+
+**Key Relationships:**
+
+| Entity | Relationship |
+|:-------|:-------------|
+| User → Role | Each user belongs to one role |
+| Driver → Profile | One-to-one driver profile |
+| Rider → Rides | A rider can create many rides |
+| Driver → Rides | A driver can complete many rides |
+| Ride → Transaction | One transaction per completed ride |
+| Ride → Rating | One rating per completed ride |
+
+---
+
+## 🔄 Ride Lifecycle
+
+```
+  ┌─────────┐     ┌──────────┐     ┌─────────────┐     ┌───────────┐
+  │ PENDING  │────►│ ACCEPTED │────►│ IN PROGRESS │────►│ COMPLETED │
+  └────┬─────┘     └──────────┘     └─────────────┘     └─────┬─────┘
+       │                                                       │
+       ▼                                                       ▼
+  ┌───────────┐                                        ┌──────────────┐
+  │ CANCELLED │                                        │  TRANSACTION │
+  └───────────┘                                        │  + RATING    │
+                                                       └──────────────┘
+```
+
+| Step | Actor | Action | Status |
+|:----:|:------|:-------|:-------|
+| 1 | Rider | Creates ride request | `pending` |
+| 2 | Driver | Accepts the ride | `accepted` |
+| 3 | Driver | Starts the ride | `in_progress` |
+| 4 | Driver | Completes the ride | `completed` |
+| 5 | System | Generates transaction | — |
+| 6 | Rider | Rates the driver | — |
+
+---
+
+## 🔌 API Reference
+
+### Authentication
+
+| Method | Endpoint | Description | Auth |
+|:------:|:---------|:------------|:----:|
+| `POST` | `/api/register` | Register a new user | ✗ |
+| `POST` | `/api/login` | Authenticate & receive token | ✗ |
+| `POST` | `/api/logout` | Revoke current token | ✓ |
+| `GET` | `/api/profile` | Retrieve authenticated user | ✓ |
+
+### Rider Endpoints
+
+| Method | Endpoint | Description | Auth |
+|:------:|:---------|:------------|:----:|
+| `GET` | `/api/rides` | List rider's rides | ✓ |
+| `POST` | `/api/rides` | Create a new ride request | ✓ |
+| `POST` | `/api/rides/{id}/cancel` | Cancel a pending ride | ✓ |
+
+### Driver Endpoints
+
+| Method | Endpoint | Description | Auth |
+|:------:|:---------|:------------|:----:|
+| `GET` | `/api/driver/rides/available` | List available ride requests | ✓ |
+| `POST` | `/api/driver/rides/{id}/accept` | Accept a ride | ✓ |
+| `POST` | `/api/driver/rides/{id}/start` | Start an accepted ride | ✓ |
+| `POST` | `/api/driver/rides/{id}/complete` | Complete an active ride | ✓ |
+| `POST` | `/api/driver/toggle-availability` | Toggle driver availability | ✓ |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **PHP** ≥ 8.1 · **Composer** · **MySQL** · **Node.js**
+- **Flutter SDK** ≥ 3.x · **Dart**
+
+### Backend Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/mazen-naji/ridepin-platform.git
+cd ridepin-platform
+
+# Install dependencies
+composer install
+
+# Configure environment
+cp .env.example .env
+php artisan key:generate
+
+# Set up database
+php artisan migrate --seed
+
+# Start the server
+php artisan serve
+```
+
+### Mobile Setup
+
+```bash
+cd mobile/ridepin
+
+# Install dependencies
+flutter pub get
+
+# Launch the app
+flutter run
+```
+
+### Demo Credentials
+
+| Role | Email | Password |
+|:-----|:------|:---------|
+| Admin | `admin@ridepin.com` | `password123` |
+
+---
+
+## 🛠 Built With
+
+<table>
+<tr>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg" width="40" height="40" alt="Laravel"/>
+<br/><sub><b>Laravel</b></sub>
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" width="40" height="40" alt="PHP"/>
+<br/><sub><b>PHP</b></sub>
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" width="40" height="40" alt="MySQL"/>
+<br/><sub><b>MySQL</b></sub>
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg" width="40" height="40" alt="Flutter"/>
+<br/><sub><b>Flutter</b></sub>
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg" width="40" height="40" alt="Dart"/>
+<br/><sub><b>Dart</b></sub>
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" width="40" height="40" alt="Git"/>
+<br/><sub><b>Git</b></sub>
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" width="40" height="40" alt="VS Code"/>
+<br/><sub><b>VS Code</b></sub>
+</td>
+</tr>
+</table>
+
+---
+
+## 📈 Roadmap
+
+- [ ] Google Maps integration with live route display
+- [ ] Real-time driver location tracking via WebSockets
+- [ ] Push notifications (Firebase Cloud Messaging)
+- [ ] Online payment gateway (Stripe / PayPal)
+- [ ] Dynamic ride fare estimation
+- [ ] Advanced analytics dashboard
+- [ ] Multi-language support (i18n)
+- [ ] Ride scheduling (book in advance)
+
+---
+
+## 👨‍💻 Author
+
+<table>
+<tr>
+<td align="center">
+<b>Mazen Naji</b>
+<br/>
+Software Engineer · Full Stack & Mobile Developer
+<br/><br/>
+<a href="https://github.com/Mazennaji">
+<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
+</a>
+<a href="https://www.linkedin.com/in/mazen-naji/">
+<img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
+</a>
+</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+
+**If you found this project useful, consider giving it a ⭐**
+
+<br/>
+
+Made with ❤️ by [Mazen Naji](https://github.com/mazen-naji)
+
+</div>
