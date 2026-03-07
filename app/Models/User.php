@@ -66,4 +66,19 @@ class User extends Authenticatable
     {
         return optional($this->role)->name === 'driver';
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function ratingsGiven()
+    {
+        return $this->hasMany(Rating::class, 'rider_id');
+    }
+
+    public function ratingsReceived()
+    {
+        return $this->hasMany(Rating::class, 'driver_id');
+    }
 }

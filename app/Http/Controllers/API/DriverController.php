@@ -4,9 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ride;
+use App\Models\RideStatusLog;
+use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class DriverController extends Controller
 {
@@ -34,7 +37,6 @@ class DriverController extends Controller
     {
         try {
             $user = auth()->user();
-
             $ride = Ride::findOrFail($id);
 
             $this->authorize('accept', $ride);
@@ -42,6 +44,13 @@ class DriverController extends Controller
             $ride->update([
                 'driver_id' => $user->id,
                 'status' => 'accepted',
+            ]);
+
+            RideStatusLog::create([
+                'ride_id' => $ride->id,
+                'status' => 'accepted',
+                'changed_by' => $user->id,
+                'timestamp' => now(),
             ]);
 
             return response()->json([
@@ -72,6 +81,13 @@ class DriverController extends Controller
                 'status' => 'started',
             ]);
 
+            RideStatusLog::create([
+                'ride_id' => $ride->id,
+                'status' => 'started',
+                'changed_by' => auth()->id(),
+                'timestamp' => now(),
+            ]);
+
             return response()->json([
                 'message' => 'Ride started successfully',
                 'ride' => $ride
@@ -100,9 +116,28 @@ class DriverController extends Controller
                 'status' => 'completed',
             ]);
 
+            RideStatusLog::create([
+                'ride_id' => $ride->id,
+                'status' => 'completed',
+                'changed_by' => auth()->id(),
+                'timestamp' => now(),
+            ]);
+
+            if (!$ride->transaction) {
+                Transaction::create([
+                    'ride_id' => $ride->id,
+                    'user_id' => $ride->rider_id,
+                    'amount' => $ride->fare ?? 10.00,
+                    'payment_method' => 'cash',
+                    'payment_status' => 'paid',
+                    'transaction_reference' => 'TXN-' . strtoupper(Str::random(10)),
+                    'paid_at' => now(),
+                ]);
+            }
+
             return response()->json([
                 'message' => 'Ride completed successfully',
-                'ride' => $ride
+                'ride' => $ride->load('transaction')
             ]);
         } catch (\Throwable $e) {
             Log::error('Ride completion failed', [

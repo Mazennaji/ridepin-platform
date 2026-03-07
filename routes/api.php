@@ -13,8 +13,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/rides', [RideController::class, 'index']);
+    Route::get('/rides/{id}', [RideController::class, 'show']);
     Route::post('/rides', [RideController::class, 'store']);
     Route::post('/rides/{id}/cancel', [RideController::class, 'cancel']);
+    Route::post('/rides/{id}/rate', [RideController::class, 'rate']);
 
     Route::get('/driver/rides/available', [DriverController::class, 'available']);
     Route::post('/driver/rides/{id}/accept', [DriverController::class, 'accept']);

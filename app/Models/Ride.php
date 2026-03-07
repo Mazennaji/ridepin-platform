@@ -29,4 +29,19 @@ class Ride extends Model
     {
         return $this->belongsTo(User::class, 'driver_id');
     }
+
+    public function transaction()
+    {
+        return $this->hasOne(Transaction::class);
+    }
+
+    public function rating()
+    {
+        return $this->hasOne(Rating::class);
+    }
+
+    public function statusLogs()
+    {
+        return $this->hasMany(RideStatusLog::class);
+    }
 }

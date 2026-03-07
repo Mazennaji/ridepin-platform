@@ -6,20 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('ride_status_logs', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('ride_id')->constrained()->cascadeOnDelete();
+            $table->string('status');
+            $table->foreignId('changed_by')->constrained('users')->cascadeOnDelete();
+            $table->timestamp('timestamp');
+
+            $table->index(['ride_id', 'status']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('ride_status_logs');
