@@ -166,7 +166,46 @@ class _RideCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                StatusPill(status: ride.status),
+                Row(
+                  children: [
+                    StatusPill(status: ride.status),
+                    if (ride.isScheduled) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.info.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: AppColors.info.withValues(alpha: 0.35),
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.schedule,
+                              size: 12,
+                              color: AppColors.info,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              'Scheduled',
+                              style: TextStyle(
+                                color: AppColors.info,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
                 Text(
                   '\$${ride.fare.toStringAsFixed(2)}',
                   style: const TextStyle(
