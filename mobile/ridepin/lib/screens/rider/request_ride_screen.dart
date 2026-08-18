@@ -15,6 +15,8 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
   final _pickup = TextEditingController();
   final _dropoff = TextEditingController();
   bool _submitting = false;
+  bool _scheduleLater = false;
+  DateTime? _scheduledAt;
 
   @override
   void dispose() {
@@ -23,8 +25,43 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
     super.dispose();
   }
 
+  Future<void> _pickDateTime() async {
+    final now = DateTime.now();
+    final date = await showDatePicker(
+      context: context,
+      initialDate: now.add(const Duration(hours: 1)),
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 30)),
+    );
+    if (date == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(now.add(const Duration(hours: 1))),
+    );
+    if (time == null) return;
+    setState(() {
+      _scheduledAt = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+    });
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_scheduleLater && _scheduledAt == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pick a date and time for your scheduled ride'),
+          backgroundColor: AppColors.surfaceAlt,
+        ),
+      );
+      return;
+    }
+
     setState(() => _submitting = true);
     final rides = context.read<RideProvider>();
     final messenger = ScaffoldMessenger.of(context);
@@ -36,6 +73,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
       pickupLng: 35.5442,
       dropoffLat: 33.8938,
       dropoffLng: 35.5018,
+      scheduledAt: _scheduleLater ? _scheduledAt : null,
     );
     if (!mounted) return;
     setState(() => _submitting = false);
@@ -49,6 +87,16 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
         ),
       );
     }
+  }
+
+  String _formatDateTime(DateTime dt) {
+    final d =
+        '${dt.day.toString().padLeft(2, '0')}/'
+        '${dt.month.toString().padLeft(2, '0')}';
+    final t =
+        '${dt.hour.toString().padLeft(2, '0')}:'
+        '${dt.minute.toString().padLeft(2, '0')}';
+    return '$d at $t';
   }
 
   @override
@@ -149,6 +197,74 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                     ),
                     const SizedBox(height: 16),
                     Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppColors.line),
+                      ),
+                      child: Column(
+                        children: [
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text(
+                              'Schedule for later',
+                              style: TextStyle(
+                                color: AppColors.text,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            value: _scheduleLater,
+                            activeThumbColor: AppColors.signal,
+                            onChanged: (v) => setState(() {
+                              _scheduleLater = v;
+                              if (!v) _scheduledAt = null;
+                            }),
+                          ),
+                          if (_scheduleLater)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: GestureDetector(
+                                onTap: _pickDateTime,
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 14,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.surfaceAlt,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.schedule,
+                                        size: 18,
+                                        color: AppColors.signal,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        _scheduledAt == null
+                                            ? 'Pick date & time'
+                                            : _formatDateTime(_scheduledAt!),
+                                        style: const TextStyle(
+                                          color: AppColors.text,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
@@ -187,7 +303,11 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                                 color: Color(0xFF1A1206),
                               ),
                             )
-                          : const Text('Confirm booking'),
+                          : Text(
+                              _scheduleLater
+                                  ? 'Schedule ride'
+                                  : 'Confirm booking',
+                            ),
                     ),
                   ],
                 ),
