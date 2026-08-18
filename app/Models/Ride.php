@@ -18,6 +18,17 @@ class Ride extends Model
         'fare',
         'distance',
         'status',
+        'scheduled_at',
+    ];
+
+    protected $casts = [
+        'scheduled_at' => 'datetime',
+        'pickup_latitude' => 'decimal:7',
+        'pickup_longitude' => 'decimal:7',
+        'dropoff_latitude' => 'decimal:7',
+        'dropoff_longitude' => 'decimal:7',
+        'fare' => 'decimal:2',
+        'distance' => 'decimal:2',
     ];
 
     public function rider()
