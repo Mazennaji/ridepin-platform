@@ -27,16 +27,22 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     final rides = context.read<RideProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     final ok = await rides.createRide(
       pickup: _pickup.text.trim(),
       dropoff: _dropoff.text.trim(),
+      pickupLat: 33.8339,
+      pickupLng: 35.5442,
+      dropoffLat: 33.8938,
+      dropoffLng: 35.5018,
     );
     if (!mounted) return;
     setState(() => _submitting = false);
     if (ok) {
-      Navigator.of(context).pop();
+      navigator.pop();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(rides.error ?? 'Could not book ride'),
           backgroundColor: AppColors.surfaceAlt,
@@ -149,19 +155,21 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: AppColors.line),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text(
-                            'Estimated fare',
-                            style: TextStyle(color: AppColors.textDim),
+                      child: const Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: AppColors.textDim,
                           ),
-                          Text(
-                            '\$10.00',
-                            style: TextStyle(
-                              color: AppColors.text,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Fare is calculated from trip distance once your ride is booked.',
+                              style: TextStyle(
+                                color: AppColors.textDim,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                         ],
