@@ -41,6 +41,7 @@ class RideProvider extends ChangeNotifier {
     double? pickupLng,
     double? dropoffLat,
     double? dropoffLng,
+    DateTime? scheduledAt,
   }) async {
     final res = await _rideService.createRide(
       pickupLocation: pickup,
@@ -49,6 +50,7 @@ class RideProvider extends ChangeNotifier {
       pickupLng: pickupLng,
       dropoffLat: dropoffLat,
       dropoffLng: dropoffLng,
+      scheduledAt: scheduledAt,
     );
     if (res.success) {
       await loadRides();
