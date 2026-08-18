@@ -7,6 +7,7 @@ class ApiConstants {
   static const String profile = '/profile';
 
   static const String rides = '/rides';
+  static const String estimate = '/rides/estimate';
   static String rideById(int id) => '/rides/$id';
   static String cancelRide(int id) => '/rides/$id/cancel';
   static String rateRide(int id) => '/rides/$id/rate';
