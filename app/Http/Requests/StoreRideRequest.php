@@ -20,6 +20,7 @@ class StoreRideRequest extends FormRequest
             'pickup_longitude' => ['required', 'numeric'],
             'dropoff_latitude' => ['required', 'numeric'],
             'dropoff_longitude' => ['required', 'numeric'],
+            'scheduled_at' => ['nullable', 'date', 'after:now'],
         ];
     }
 }
