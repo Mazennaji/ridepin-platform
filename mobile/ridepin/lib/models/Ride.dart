@@ -23,6 +23,7 @@ class Ride {
   final double fare;
   final double distance;
   final String status;
+  final DateTime? scheduledAt;
   final String? createdAt;
 
   final AppUser? rider;
@@ -43,6 +44,7 @@ class Ride {
     required this.fare,
     required this.distance,
     required this.status,
+    this.scheduledAt,
     this.createdAt,
     this.rider,
     this.driver,
@@ -57,6 +59,7 @@ class Ride {
   bool get isCancelled => status == RideStatus.cancelled;
   bool get isActive => isAccepted || isStarted;
   bool get canBeRated => isCompleted && rating == null;
+  bool get isScheduled => scheduledAt != null;
 
   factory Ride.fromJson(Map<String, dynamic> json) {
     return Ride(
@@ -72,6 +75,9 @@ class Ride {
       fare: _toDouble(json['fare']),
       distance: _toDouble(json['distance']),
       status: json['status'] as String? ?? RideStatus.pending,
+      scheduledAt: json['scheduled_at'] != null
+          ? DateTime.tryParse(json['scheduled_at'].toString())
+          : null,
       createdAt: json['created_at'] as String?,
       rider: json['rider'] is Map
           ? AppUser.fromJson(Map<String, dynamic>.from(json['rider']))
