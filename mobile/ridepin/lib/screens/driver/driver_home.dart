@@ -20,7 +20,9 @@ class _DriverHomeState extends State<DriverHome> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DriverProvider>().loadAvailable();
+      context.read<DriverProvider>()
+        ..syncAvailability()
+        ..loadAvailable();
     });
   }
 
@@ -61,12 +63,11 @@ class _DriverHomeState extends State<DriverHome> {
             _AvailabilityCard(
               isAvailable: driver.isAvailable,
               onToggle: (v) async {
-                final messenger = ScaffoldMessenger.of(context);
                 final ok = await context
                     .read<DriverProvider>()
                     .toggleAvailability(v);
-                if (!ok) {
-                  messenger.showSnackBar(
+                if (!ok && mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Could not update availability'),
                       backgroundColor: AppColors.surfaceAlt,
