@@ -2,21 +2,56 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\DriverProfile;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        // 1. Roles — created first because users reference them.
+        $adminRole  = Role::firstOrCreate(['name' => 'admin']);
+        $riderRole  = Role::firstOrCreate(['name' => 'rider']);
+        $driverRole = Role::firstOrCreate(['name' => 'driver']);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // 2. Admin user — matches the demo credentials in your README.
+        User::firstOrCreate(
+            ['email' => 'admin@ridepin.com'],
+            [
+                'name'     => 'Admin',
+                'password' => Hash::make('password123'),
+                'role_id'  => $adminRole->id,
+            ]
+        );
+
+        // 3. Sample rider — for walking the ride lifecycle.
+        User::firstOrCreate(
+            ['email' => 'rider@ridepin.com'],
+            [
+                'name'     => 'Sample Rider',
+                'password' => Hash::make('password123'),
+                'role_id'  => $riderRole->id,
+            ]
+        );
+
+        // 4. Sample driver + driver profile.
+        $driver = User::firstOrCreate(
+            ['email' => 'driver@ridepin.com'],
+            [
+                'name'     => 'Sample Driver',
+                'password' => Hash::make('password123'),
+                'role_id'  => $driverRole->id,
+            ]
+        );
+
+        DriverProfile::firstOrCreate(
+            ['user_id' => $driver->id],
+            [
+                'is_available' => true,
+            ]
+        );
     }
 }
