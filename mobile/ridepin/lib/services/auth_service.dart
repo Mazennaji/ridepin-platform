@@ -26,7 +26,6 @@ class AuthService {
         ApiConstants.login,
         data: {'email': email, 'password': password},
       );
-
       if (res.statusCode == 200 && res.data['token'] != null) {
         return _persist(res.data);
       }
@@ -46,10 +45,6 @@ class AuthService {
     required String passwordConfirmation,
     required String role,
     String? phone,
-    String? licenseNumber,
-    String? vehicleType,
-    String? vehicleModel,
-    String? plateNumber,
   }) async {
     try {
       final data = <String, dynamic>{
@@ -59,16 +54,8 @@ class AuthService {
         'password_confirmation': passwordConfirmation,
         'role': role,
         if (phone != null && phone.isNotEmpty) 'phone': phone,
-        if (role == 'driver') ...{
-          'license_number': licenseNumber,
-          'vehicle_type': vehicleType,
-          'vehicle_model': vehicleModel,
-          'plate_number': plateNumber,
-        },
       };
-
       final res = await _api.dio.post(ApiConstants.register, data: data);
-
       if ((res.statusCode == 200 || res.statusCode == 201) &&
           res.data['token'] != null) {
         return _persist(res.data);
@@ -86,7 +73,6 @@ class AuthService {
     try {
       await _api.dio.post(ApiConstants.logout);
     } catch (_) {
-      // Even if the network call fails, clear local state below.
     } finally {
       await _storage.clear();
     }
