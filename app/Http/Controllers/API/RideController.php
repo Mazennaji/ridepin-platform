@@ -9,10 +9,14 @@ use App\Models\Rating;
 use App\Models\Ride;
 use App\Models\RideStatusLog;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class RideController extends Controller
 {
+    private const BASE_FARE = 2.50;
+    private const PER_KM_RATE = 1.50;
+
     public function index(): JsonResponse
     {
         $user = auth()->user();
@@ -43,25 +47,38 @@ class RideController extends Controller
         try {
             $this->authorize('create', Ride::class);
 
-            $ride = Ride::create([
-                'rider_id' => auth()->id(),
-                'pickup_location' => $request->pickup_location,
-                'dropoff_location' => $request->dropoff_location,
-                'pickup_latitude' => $request->pickup_latitude,
-                'pickup_longitude' => $request->pickup_longitude,
-                'dropoff_latitude' => $request->dropoff_latitude,
-                'dropoff_longitude' => $request->dropoff_longitude,
-                'fare' => 10.00,
-                'distance' => 5.00,
-                'status' => 'pending',
-            ]);
+            $distance = $this->haversineDistance(
+                (float) $request->pickup_latitude,
+                (float) $request->pickup_longitude,
+                (float) $request->dropoff_latitude,
+                (float) $request->dropoff_longitude,
+            );
 
-            RideStatusLog::create([
-                'ride_id' => $ride->id,
-                'status' => 'pending',
-                'changed_by' => auth()->id(),
-                'timestamp' => now(),
-            ]);
+            $fare = $this->calculateFare($distance);
+
+            $ride = DB::transaction(function () use ($request, $distance, $fare) {
+                $ride = Ride::create([
+                    'rider_id' => auth()->id(),
+                    'pickup_location' => $request->pickup_location,
+                    'dropoff_location' => $request->dropoff_location,
+                    'pickup_latitude' => $request->pickup_latitude,
+                    'pickup_longitude' => $request->pickup_longitude,
+                    'dropoff_latitude' => $request->dropoff_latitude,
+                    'dropoff_longitude' => $request->dropoff_longitude,
+                    'fare' => $fare,
+                    'distance' => $distance,
+                    'status' => 'pending',
+                ]);
+
+                RideStatusLog::create([
+                    'ride_id' => $ride->id,
+                    'status' => 'pending',
+                    'changed_by' => auth()->id(),
+                    'timestamp' => now(),
+                ]);
+
+                return $ride;
+            });
 
             return response()->json([
                 'message' => 'Ride created successfully',
@@ -86,16 +103,18 @@ class RideController extends Controller
 
             $this->authorize('cancel', $ride);
 
-            $ride->update([
-                'status' => 'cancelled'
-            ]);
+            DB::transaction(function () use ($ride) {
+                $ride->update([
+                    'status' => 'cancelled'
+                ]);
 
-            RideStatusLog::create([
-                'ride_id' => $ride->id,
-                'status' => 'cancelled',
-                'changed_by' => auth()->id(),
-                'timestamp' => now(),
-            ]);
+                RideStatusLog::create([
+                    'ride_id' => $ride->id,
+                    'status' => 'cancelled',
+                    'changed_by' => auth()->id(),
+                    'timestamp' => now(),
+                ]);
+            });
 
             return response()->json([
                 'message' => 'Ride cancelled successfully',
@@ -171,5 +190,27 @@ class RideController extends Controller
                 'message' => 'Ride rating failed'
             ], 500);
         }
+    }
+
+    private function calculateFare(float $distanceKm): float
+    {
+        return round(self::BASE_FARE + ($distanceKm * self::PER_KM_RATE), 2);
+    }
+
+    private function haversineDistance(
+        float $lat1,
+        float $lon1,
+        float $lat2,
+        float $lon2
+    ): float {
+        $earthRadius = 6371;
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return round($earthRadius * $c, 2);
     }
 }
