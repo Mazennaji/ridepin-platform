@@ -91,6 +91,7 @@ class RideController extends Controller
                     'fare' => $fare,
                     'distance' => $distance,
                     'status' => 'pending',
+                    'scheduled_at' => $request->scheduled_at,
                 ]);
 
                 RideStatusLog::create([
