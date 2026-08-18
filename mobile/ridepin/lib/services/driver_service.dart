@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../core/constants/api_constants.dart';
 import '../core/network/api_client.dart';
 import '../models/ride.dart';
+import '../models/driver_profile.dart';
 
 class DriverActionResult {
   final bool success;
@@ -13,6 +14,21 @@ class DriverActionResult {
 class DriverService {
   final ApiClient _api;
   DriverService(this._api);
+
+  Future<DriverProfile?> myProfile() async {
+    try {
+      final res = await _api.dio.get(ApiConstants.profile);
+      final data = res.data['user'];
+      if (data is Map && data['driver_profile'] is Map) {
+        return DriverProfile.fromJson(
+          Map<String, dynamic>.from(data['driver_profile']),
+        );
+      }
+      return null;
+    } on DioException {
+      return null;
+    }
+  }
 
   Future<List<Ride>> availableRides() async {
     final res = await _api.dio.get(ApiConstants.availableRides);
