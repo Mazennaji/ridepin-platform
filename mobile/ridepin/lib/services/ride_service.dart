@@ -68,6 +68,7 @@ class RideService {
     double? pickupLng,
     double? dropoffLat,
     double? dropoffLng,
+    DateTime? scheduledAt,
   }) async {
     try {
       final data = <String, dynamic>{
@@ -78,6 +79,9 @@ class RideService {
       if (pickupLng != null) data['pickup_longitude'] = pickupLng;
       if (dropoffLat != null) data['dropoff_latitude'] = dropoffLat;
       if (dropoffLng != null) data['dropoff_longitude'] = dropoffLng;
+      if (scheduledAt != null) {
+        data['scheduled_at'] = scheduledAt.toUtc().toIso8601String();
+      }
 
       final res = await _api.dio.post(ApiConstants.rides, data: data);
       if (res.statusCode == 201) {
