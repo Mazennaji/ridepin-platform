@@ -18,6 +18,14 @@ class DriverProvider extends ChangeNotifier {
   bool get loading => _loading;
   String? get error => _error;
 
+  Future<void> syncAvailability() async {
+    final profile = await _driverService.myProfile();
+    if (profile != null) {
+      _isAvailable = profile.isAvailable;
+      notifyListeners();
+    }
+  }
+
   Future<void> loadAvailable() async {
     _loading = true;
     _error = null;
