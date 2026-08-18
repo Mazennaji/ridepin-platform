@@ -50,7 +50,12 @@ class DatabaseSeeder extends Seeder
         DriverProfile::firstOrCreate(
             ['user_id' => $driver->id],
             [
-                'is_available' => true,
+                'license_number'      => 'LIC-123456',
+                'vehicle_type'        => 'Sedan',
+                'vehicle_model'       => 'Toyota Corolla 2020',
+                'plate_number'        => 'ABC-1234',
+                'is_available'        => true,
+                'verification_status' => true,
             ]
         );
     }
