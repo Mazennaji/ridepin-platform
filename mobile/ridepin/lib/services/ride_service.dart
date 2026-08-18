@@ -10,6 +10,12 @@ class RideResult {
   const RideResult({required this.success, this.error, this.ride});
 }
 
+class FareEstimate {
+  final double fare;
+  final double distance;
+  const FareEstimate({required this.fare, required this.distance});
+}
+
 class RideService {
   final ApiClient _api;
   RideService(this._api);
@@ -27,6 +33,34 @@ class RideService {
     return Ride.fromJson(Map<String, dynamic>.from(res.data['ride']));
   }
 
+  Future<FareEstimate?> estimate({
+    required double pickupLat,
+    required double pickupLng,
+    required double dropoffLat,
+    required double dropoffLng,
+  }) async {
+    try {
+      final res = await _api.dio.post(
+        ApiConstants.estimate,
+        data: {
+          'pickup_latitude': pickupLat,
+          'pickup_longitude': pickupLng,
+          'dropoff_latitude': dropoffLat,
+          'dropoff_longitude': dropoffLng,
+        },
+      );
+      if (res.statusCode == 200) {
+        return FareEstimate(
+          fare: (res.data['fare'] as num).toDouble(),
+          distance: (res.data['distance'] as num).toDouble(),
+        );
+      }
+      return null;
+    } on DioException {
+      return null;
+    }
+  }
+
   Future<RideResult> createRide({
     required String pickupLocation,
     required String dropoffLocation,
@@ -41,7 +75,10 @@ class RideService {
         data: {
           'pickup_location': pickupLocation,
           'dropoff_location': dropoffLocation,
-          ?pickupLat == null ? null : 'pickup_latitude': pickupLat,
+          if (pickupLat != null) 'pickup_latitude': pickupLat,
+          if (pickupLng != null) 'pickup_longitude': pickupLng,
+          if (dropoffLat != null) 'dropoff_latitude': dropoffLat,
+          if (dropoffLng != null) 'dropoff_longitude': dropoffLng,
         },
       );
       if (res.statusCode == 201) {
