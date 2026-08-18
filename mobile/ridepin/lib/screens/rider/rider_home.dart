@@ -70,12 +70,12 @@ class _RiderHomeState extends State<RiderHome> {
             ),
             const SizedBox(height: 24),
             if (active != null) ...[
-              _SectionLabel('Current ride'),
+              const _SectionLabel('Current ride'),
               const SizedBox(height: 12),
               _RideCard(ride: active, onTap: () => _openDetail(active)),
               const SizedBox(height: 28),
             ],
-            _SectionLabel('History'),
+            const _SectionLabel('History'),
             const SizedBox(height: 12),
             if (rides.loading && rides.rides.isEmpty)
               const Padding(
@@ -105,22 +105,26 @@ class _RiderHomeState extends State<RiderHome> {
                 'Book a ride',
                 style: TextStyle(fontWeight: FontWeight.w700),
               ),
-              onPressed: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const RequestRideScreen()),
-                );
-                if (mounted) context.read<RideProvider>().loadRides();
-              },
+              onPressed: _openRequest,
             )
           : null,
     );
   }
 
-  void _openDetail(Ride ride) async {
+  Future<void> _openRequest() async {
+    final rides = context.read<RideProvider>();
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const RequestRideScreen()));
+    rides.loadRides();
+  }
+
+  Future<void> _openDetail(Ride ride) async {
+    final rides = context.read<RideProvider>();
     await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => RideDetailScreen(rideId: ride.id)),
     );
-    if (mounted) context.read<RideProvider>().loadRides();
+    rides.loadRides();
   }
 }
 
