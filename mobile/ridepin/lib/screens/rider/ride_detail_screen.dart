@@ -38,13 +38,16 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     final service = context.read<RideService>();
     try {
       final r = await service.getRide(widget.rideId);
-      if (mounted)
+      if (mounted) {
         setState(() {
           _ride = r;
           _loading = false;
         });
+      }
     } catch (_) {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -55,7 +58,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
 
   Future<void> _submitRating() async {
     setState(() => _rating = true);
-    final ok = await context.read<RideProvider>().rateRide(
+    final provider = context.read<RideProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await provider.rateRide(
       widget.rideId,
       _score,
       _comment.text.trim(),
@@ -64,7 +69,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     setState(() => _rating = false);
     if (ok) {
       _load();
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('Thanks for the rating'),
           backgroundColor: AppColors.surfaceAlt,
@@ -131,7 +136,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           _infoRow('Reference', ride.transaction!.transactionReference),
         ],
         const SizedBox(height: 24),
-        if (ride.isPending) ...[
+        if (ride.isPending)
           OutlinedButton(
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.danger,
@@ -147,7 +152,6 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
           ),
-        ],
         if (ride.canBeRated) _ratingBlock(),
         if (ride.isCompleted && ride.rating != null)
           _ratedSummary(ride.rating!.score, ride.rating!.comment),
@@ -257,7 +261,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Your rating',
+            'YOUR RATING',
             style: TextStyle(
               color: AppColors.textDim,
               fontSize: 12,
