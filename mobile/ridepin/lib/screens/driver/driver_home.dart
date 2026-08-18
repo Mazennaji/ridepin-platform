@@ -63,11 +63,11 @@ class _DriverHomeState extends State<DriverHome> {
             _AvailabilityCard(
               isAvailable: driver.isAvailable,
               onToggle: (v) async {
-                final ok = await context
-                    .read<DriverProvider>()
-                    .toggleAvailability(v);
-                if (!ok && mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                final messenger = ScaffoldMessenger.of(context);
+                final provider = context.read<DriverProvider>();
+                final ok = await provider.toggleAvailability(v);
+                if (!ok) {
+                  messenger.showSnackBar(
                     const SnackBar(
                       content: Text('Could not update availability'),
                       backgroundColor: AppColors.surfaceAlt,
@@ -127,14 +127,16 @@ class _DriverHomeState extends State<DriverHome> {
 
   Future<void> _accept(Ride ride) async {
     final driver = context.read<DriverProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     final ok = await driver.accept(ride.id);
     if (!mounted) return;
     if (ok) {
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (_) => const ActiveRideScreen()));
+      navigator.push(
+        MaterialPageRoute(builder: (_) => const ActiveRideScreen()),
+      );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(driver.error ?? 'Could not accept ride'),
           backgroundColor: AppColors.surfaceAlt,
