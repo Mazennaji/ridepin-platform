@@ -49,6 +49,8 @@ class RidePinApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<RideService>.value(value: rideService),
+        Provider<DriverService>.value(value: driverService),
         ChangeNotifierProvider(
           create: (_) => AuthProvider(authService, storage)..bootstrap(),
         ),
