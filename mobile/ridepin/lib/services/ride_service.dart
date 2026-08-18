@@ -70,17 +70,16 @@ class RideService {
     double? dropoffLng,
   }) async {
     try {
-      final res = await _api.dio.post(
-        ApiConstants.rides,
-        data: {
-          'pickup_location': pickupLocation,
-          'dropoff_location': dropoffLocation,
-          if (pickupLat != null) 'pickup_latitude': pickupLat,
-          if (pickupLng != null) 'pickup_longitude': pickupLng,
-          if (dropoffLat != null) 'dropoff_latitude': dropoffLat,
-          if (dropoffLng != null) 'dropoff_longitude': dropoffLng,
-        },
-      );
+      final data = <String, dynamic>{
+        'pickup_location': pickupLocation,
+        'dropoff_location': dropoffLocation,
+      };
+      if (pickupLat != null) data['pickup_latitude'] = pickupLat;
+      if (pickupLng != null) data['pickup_longitude'] = pickupLng;
+      if (dropoffLat != null) data['dropoff_latitude'] = dropoffLat;
+      if (dropoffLng != null) data['dropoff_longitude'] = dropoffLng;
+
+      final res = await _api.dio.post(ApiConstants.rides, data: data);
       if (res.statusCode == 201) {
         return RideResult(
           success: true,
@@ -114,13 +113,10 @@ class RideService {
     String? comment,
   }) async {
     try {
-      final res = await _api.dio.post(
-        ApiConstants.rateRide(id),
-        data: {
-          'score': score,
-          if (comment != null && comment.isNotEmpty) 'comment': comment,
-        },
-      );
+      final data = <String, dynamic>{'score': score};
+      if (comment != null && comment.isNotEmpty) data['comment'] = comment;
+
+      final res = await _api.dio.post(ApiConstants.rateRide(id), data: data);
       if (res.statusCode == 201) {
         return const RideResult(success: true);
       }
