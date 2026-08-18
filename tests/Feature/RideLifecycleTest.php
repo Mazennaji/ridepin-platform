@@ -22,6 +22,18 @@ class RideLifecycleTest extends TestCase
         Role::firstOrCreate(['name' => 'driver']);
     }
 
+    private function ridePayload(): array
+    {
+        return [
+            'pickup_location' => 'Baabda',
+            'dropoff_location' => 'Beirut',
+            'pickup_latitude' => 33.8339,
+            'pickup_longitude' => 35.5442,
+            'dropoff_latitude' => 33.8938,
+            'dropoff_longitude' => 35.5018,
+        ];
+    }
+
     private function makeRider(): User
     {
         return User::create([
@@ -55,10 +67,7 @@ class RideLifecycleTest extends TestCase
     private function createRide(User $rider): int
     {
         Sanctum::actingAs($rider);
-        $res = $this->postJson('/api/rides', [
-            'pickup_location' => 'A',
-            'dropoff_location' => 'B',
-        ]);
+        $res = $this->postJson('/api/rides', $this->ridePayload());
         $res->assertStatus(201);
         return $res->json('ride.id');
     }
@@ -68,10 +77,7 @@ class RideLifecycleTest extends TestCase
         $rider = $this->makeRider();
         Sanctum::actingAs($rider);
 
-        $res = $this->postJson('/api/rides', [
-            'pickup_location' => 'Baabda',
-            'dropoff_location' => 'Beirut',
-        ]);
+        $res = $this->postJson('/api/rides', $this->ridePayload());
 
         $res->assertStatus(201)
             ->assertJsonPath('ride.status', 'pending');
