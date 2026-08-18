@@ -52,10 +52,6 @@ class AuthProvider extends ChangeNotifier {
     required String passwordConfirmation,
     required String role,
     String? phone,
-    String? licenseNumber,
-    String? vehicleType,
-    String? vehicleModel,
-    String? plateNumber,
   }) async {
     _setLoading(true);
     final res = await _authService.register(
@@ -65,10 +61,6 @@ class AuthProvider extends ChangeNotifier {
       passwordConfirmation: passwordConfirmation,
       role: role,
       phone: phone,
-      licenseNumber: licenseNumber,
-      vehicleType: vehicleType,
-      vehicleModel: vehicleModel,
-      plateNumber: plateNumber,
     );
     _applyResult(res);
     _setLoading(false);
