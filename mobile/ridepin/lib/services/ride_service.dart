@@ -41,10 +41,7 @@ class RideService {
         data: {
           'pickup_location': pickupLocation,
           'dropoff_location': dropoffLocation,
-          if (pickupLat != null) 'pickup_latitude': pickupLat,
-          if (pickupLng != null) 'pickup_longitude': pickupLng,
-          if (dropoffLat != null) 'dropoff_latitude': dropoffLat,
-          if (dropoffLng != null) 'dropoff_longitude': dropoffLng,
+          ?pickupLat == null ? null : 'pickup_latitude': pickupLat,
         },
       );
       if (res.statusCode == 201) {
