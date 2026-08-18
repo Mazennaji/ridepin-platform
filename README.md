@@ -178,7 +178,7 @@ Set the API base URL in `lib/core/constants/api_constants.dart` to match how you
 
 **Mazen Naji** — Full-Stack & Mobile Developer
 
-[GitHub](https://github.com/<YOUR-GITHUB-USERNAME>) · [LinkedIn](https://www.linkedin.com/in/mazen-naji/)
+[GitHub](https://github.com/Mazennaji) · [LinkedIn](https://www.linkedin.com/in/mazen-naji/)
 
 ---
 
