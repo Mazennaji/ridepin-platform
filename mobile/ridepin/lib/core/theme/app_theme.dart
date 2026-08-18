@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   static const bg = Color(0xFF0B0D12);
@@ -27,16 +28,16 @@ class AppTheme {
         secondary: AppColors.signal,
         error: AppColors.danger,
       ),
-      fontFamily: 'Inter',
     );
 
     return base.copyWith(
-      appBarTheme: const AppBarTheme(
+      textTheme: GoogleFonts.interTextTheme(base.textTheme),
+      appBarTheme: AppBarTheme(
         backgroundColor: AppColors.bg,
         foregroundColor: AppColors.text,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: TextStyle(
+        titleTextStyle: GoogleFonts.inter(
           color: AppColors.text,
           fontSize: 18,
           fontWeight: FontWeight.w700,
@@ -54,7 +55,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
-          textStyle: const TextStyle(
+          textStyle: GoogleFonts.inter(
             fontSize: 15,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.2,
@@ -62,13 +63,16 @@ class AppTheme {
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: AppColors.signal),
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.signal,
+          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surface,
-        hintStyle: const TextStyle(color: AppColors.textFaint, fontSize: 15),
-        labelStyle: const TextStyle(color: AppColors.textDim),
+        hintStyle: GoogleFonts.inter(color: AppColors.textFaint, fontSize: 15),
+        labelStyle: GoogleFonts.inter(color: AppColors.textDim),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 18,
