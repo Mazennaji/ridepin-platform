@@ -9,6 +9,7 @@ use App\Models\Rating;
 use App\Models\Ride;
 use App\Models\RideStatusLog;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -39,6 +40,28 @@ class RideController extends Controller
 
         return response()->json([
             'rides' => $rides
+        ]);
+    }
+
+    public function estimate(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'pickup_latitude' => ['required', 'numeric'],
+            'pickup_longitude' => ['required', 'numeric'],
+            'dropoff_latitude' => ['required', 'numeric'],
+            'dropoff_longitude' => ['required', 'numeric'],
+        ]);
+
+        $distance = $this->haversineDistance(
+            (float) $validated['pickup_latitude'],
+            (float) $validated['pickup_longitude'],
+            (float) $validated['dropoff_latitude'],
+            (float) $validated['dropoff_longitude'],
+        );
+
+        return response()->json([
+            'distance' => $distance,
+            'fare' => $this->calculateFare($distance),
         ]);
     }
 
