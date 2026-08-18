@@ -8,6 +8,7 @@ use App\Models\RideStatusLog;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -41,17 +42,19 @@ class DriverController extends Controller
 
             $this->authorize('accept', $ride);
 
-            $ride->update([
-                'driver_id' => $user->id,
-                'status' => 'accepted',
-            ]);
+            DB::transaction(function () use ($ride, $user) {
+                $ride->update([
+                    'driver_id' => $user->id,
+                    'status' => 'accepted',
+                ]);
 
-            RideStatusLog::create([
-                'ride_id' => $ride->id,
-                'status' => 'accepted',
-                'changed_by' => $user->id,
-                'timestamp' => now(),
-            ]);
+                RideStatusLog::create([
+                    'ride_id' => $ride->id,
+                    'status' => 'accepted',
+                    'changed_by' => $user->id,
+                    'timestamp' => now(),
+                ]);
+            });
 
             return response()->json([
                 'message' => 'Ride accepted successfully',
@@ -77,16 +80,18 @@ class DriverController extends Controller
 
             $this->authorize('start', $ride);
 
-            $ride->update([
-                'status' => 'started',
-            ]);
+            DB::transaction(function () use ($ride) {
+                $ride->update([
+                    'status' => 'started',
+                ]);
 
-            RideStatusLog::create([
-                'ride_id' => $ride->id,
-                'status' => 'started',
-                'changed_by' => auth()->id(),
-                'timestamp' => now(),
-            ]);
+                RideStatusLog::create([
+                    'ride_id' => $ride->id,
+                    'status' => 'started',
+                    'changed_by' => auth()->id(),
+                    'timestamp' => now(),
+                ]);
+            });
 
             return response()->json([
                 'message' => 'Ride started successfully',
@@ -112,28 +117,30 @@ class DriverController extends Controller
 
             $this->authorize('complete', $ride);
 
-            $ride->update([
-                'status' => 'completed',
-            ]);
-
-            RideStatusLog::create([
-                'ride_id' => $ride->id,
-                'status' => 'completed',
-                'changed_by' => auth()->id(),
-                'timestamp' => now(),
-            ]);
-
-            if (!$ride->transaction) {
-                Transaction::create([
-                    'ride_id' => $ride->id,
-                    'user_id' => $ride->rider_id,
-                    'amount' => $ride->fare ?? 10.00,
-                    'payment_method' => 'cash',
-                    'payment_status' => 'paid',
-                    'transaction_reference' => 'TXN-' . strtoupper(Str::random(10)),
-                    'paid_at' => now(),
+            DB::transaction(function () use ($ride) {
+                $ride->update([
+                    'status' => 'completed',
                 ]);
-            }
+
+                RideStatusLog::create([
+                    'ride_id' => $ride->id,
+                    'status' => 'completed',
+                    'changed_by' => auth()->id(),
+                    'timestamp' => now(),
+                ]);
+
+                if (!$ride->transaction) {
+                    Transaction::create([
+                        'ride_id' => $ride->id,
+                        'user_id' => $ride->rider_id,
+                        'amount' => $ride->fare ?? 10.00,
+                        'payment_method' => 'cash',
+                        'payment_status' => 'paid',
+                        'transaction_reference' => 'TXN-' . strtoupper(Str::random(10)),
+                        'paid_at' => now(),
+                    ]);
+                }
+            });
 
             return response()->json([
                 'message' => 'Ride completed successfully',
