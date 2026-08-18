@@ -48,24 +48,30 @@ class _DriverHomeState extends State<DriverHome> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
           children: [
-            Text('Hi ${auth.user?.name.split(' ').first ?? ''}',
-                style: const TextStyle(
-                    color: AppColors.text,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.6)),
+            Text(
+              'Hi ${auth.user?.name.split(' ').first ?? ''}',
+              style: const TextStyle(
+                color: AppColors.text,
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.6,
+              ),
+            ),
             const SizedBox(height: 20),
             _AvailabilityCard(
               isAvailable: driver.isAvailable,
               onToggle: (v) async {
+                final messenger = ScaffoldMessenger.of(context);
                 final ok = await context
                     .read<DriverProvider>()
                     .toggleAvailability(v);
-                if (!ok && mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Could not update availability'),
-                    backgroundColor: AppColors.surfaceAlt,
-                  ));
+                if (!ok) {
+                  messenger.showSnackBar(
+                    const SnackBar(
+                      content: Text('Could not update availability'),
+                      backgroundColor: AppColors.surfaceAlt,
+                    ),
+                  );
                 }
               },
             ),
@@ -73,18 +79,24 @@ class _DriverHomeState extends State<DriverHome> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('AVAILABLE RIDES',
-                    style: TextStyle(
-                        color: AppColors.textFaint,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.4)),
+                const Text(
+                  'AVAILABLE RIDES',
+                  style: TextStyle(
+                    color: AppColors.textFaint,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.4,
+                  ),
+                ),
                 if (driver.available.isNotEmpty)
-                  Text('${driver.available.length}',
-                      style: const TextStyle(
-                          color: AppColors.signal,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800)),
+                  Text(
+                    '${driver.available.length}',
+                    style: const TextStyle(
+                      color: AppColors.signal,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
               ],
             ),
             const SizedBox(height: 12),
@@ -92,20 +104,20 @@ class _DriverHomeState extends State<DriverHome> {
               const Padding(
                 padding: EdgeInsets.only(top: 40),
                 child: Center(
-                    child: CircularProgressIndicator(color: AppColors.signal)),
+                  child: CircularProgressIndicator(color: AppColors.signal),
+                ),
               )
             else if (!driver.isAvailable)
               const _Hint('Go online to see ride requests near you.')
             else if (driver.available.isEmpty)
               const _Hint('No requests right now. Pull to refresh.')
             else
-              ...driver.available.map((r) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _RequestCard(
-                      ride: r,
-                      onAccept: () => _accept(r),
-                    ),
-                  )),
+              ...driver.available.map(
+                (r) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _RequestCard(ride: r, onAccept: () => _accept(r)),
+                ),
+              ),
           ],
         ),
       ),
@@ -117,13 +129,16 @@ class _DriverHomeState extends State<DriverHome> {
     final ok = await driver.accept(ride.id);
     if (!mounted) return;
     if (ok) {
-      Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const ActiveRideScreen()));
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const ActiveRideScreen()));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(driver.error ?? 'Could not accept ride'),
-        backgroundColor: AppColors.surfaceAlt,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(driver.error ?? 'Could not accept ride'),
+          backgroundColor: AppColors.surfaceAlt,
+        ),
+      );
     }
   }
 }
@@ -141,7 +156,8 @@ class _AvailabilityCard extends StatelessWidget {
         color: isAvailable ? AppColors.signal : AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-            color: isAvailable ? AppColors.signal : AppColors.line),
+          color: isAvailable ? AppColors.signal : AppColors.line,
+        ),
       ),
       child: Row(
         children: [
@@ -149,7 +165,9 @@ class _AvailabilityCard extends StatelessWidget {
             width: 12,
             height: 12,
             decoration: BoxDecoration(
-              color: isAvailable ? const Color(0xFF1A1206) : AppColors.textFaint,
+              color: isAvailable
+                  ? const Color(0xFF1A1206)
+                  : AppColors.textFaint,
               shape: BoxShape.circle,
             ),
           ),
@@ -158,23 +176,28 @@ class _AvailabilityCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(isAvailable ? "You're online" : "You're offline",
-                    style: TextStyle(
-                        color: isAvailable
-                            ? const Color(0xFF1A1206)
-                            : AppColors.text,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800)),
+                Text(
+                  isAvailable ? "You're online" : "You're offline",
+                  style: TextStyle(
+                    color: isAvailable
+                        ? const Color(0xFF1A1206)
+                        : AppColors.text,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text(
-                    isAvailable
-                        ? 'Receiving ride requests'
-                        : 'Not receiving requests',
-                    style: TextStyle(
-                        color: isAvailable
-                            ? const Color(0xCC1A1206)
-                            : AppColors.textDim,
-                        fontSize: 13)),
+                  isAvailable
+                      ? 'Receiving ride requests'
+                      : 'Not receiving requests',
+                  style: TextStyle(
+                    color: isAvailable
+                        ? const Color(0xCC1A1206)
+                        : AppColors.textDim,
+                    fontSize: 13,
+                  ),
+                ),
               ],
             ),
           ),
@@ -215,17 +238,23 @@ class _RequestCard extends StatelessWidget {
                 children: [
                   const Icon(Icons.person, size: 16, color: AppColors.textDim),
                   const SizedBox(width: 6),
-                  Text(ride.rider?.name ?? 'Rider',
-                      style: const TextStyle(
-                          color: AppColors.text,
-                          fontWeight: FontWeight.w600)),
+                  Text(
+                    ride.rider?.name ?? 'Rider',
+                    style: const TextStyle(
+                      color: AppColors.text,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
-              Text('\$${ride.fare.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                      color: AppColors.text,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800)),
+              Text(
+                '\$${ride.fare.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: AppColors.text,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -233,7 +262,9 @@ class _RequestCard extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: onAccept,
-            style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+            ),
             child: const Text('Accept ride'),
           ),
         ],
@@ -255,9 +286,11 @@ class _Hint extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.line),
       ),
-      child: Text(text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: AppColors.textDim, fontSize: 14)),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: const TextStyle(color: AppColors.textDim, fontSize: 14),
+      ),
     );
   }
 }
