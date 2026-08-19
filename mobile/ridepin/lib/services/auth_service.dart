@@ -78,6 +78,18 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>?> fetchProfile() async {
+    try {
+      final res = await _api.dio.get(ApiConstants.profile);
+      if (res.statusCode == 200 && res.data['user'] is Map) {
+        return Map<String, dynamic>.from(res.data['user']);
+      }
+      return null;
+    } on DioException {
+      return null;
+    }
+  }
+
   Future<AuthResult> _persist(Map<String, dynamic> data) async {
     final user = AppUser.fromJson(Map<String, dynamic>.from(data['user']));
     await _storage.saveAuth(
