@@ -29,4 +29,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/driver/rides/{id}/start', [DriverController::class, 'start']);
     Route::post('/driver/rides/{id}/complete', [DriverController::class, 'complete']);
     Route::post('/driver/toggle-availability', [DriverController::class, 'toggleAvailability']);
+
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
 });
