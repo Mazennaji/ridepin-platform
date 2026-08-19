@@ -5,6 +5,7 @@ import '../../models/ride.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/ride_provider.dart';
 import '../../widgets/brand.dart';
+import '../profile/profile_screen.dart';
 import '../../widgets/route_line.dart';
 import '../../widgets/status_pill.dart';
 import 'request_ride_screen.dart';
@@ -41,8 +42,10 @@ class _RiderHomeState extends State<RiderHome> {
         title: const BrandMark(size: 30),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: AppColors.textDim),
-            onPressed: () => context.read<AuthProvider>().logout(),
+            icon: const Icon(Icons.person_outline, color: AppColors.textDim),
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
           ),
           const SizedBox(width: 8),
         ],
