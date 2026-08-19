@@ -130,6 +130,39 @@ class RideService {
     }
   }
 
+  Future<bool> payCash(int rideId) async {
+    try {
+      final res = await _api.dio.post(ApiConstants.paymentCash(rideId));
+      return res.statusCode == 200;
+    } on DioException {
+      return false;
+    }
+  }
+
+  Future<String?> startCardCheckout(int rideId) async {
+    try {
+      final res = await _api.dio.post(ApiConstants.paymentCheckout(rideId));
+      if (res.statusCode == 200) {
+        return res.data['checkout_url'] as String?;
+      }
+      return null;
+    } on DioException {
+      return null;
+    }
+  }
+
+  Future<bool> confirmCardPayment(int rideId, String sessionId) async {
+    try {
+      final res = await _api.dio.post(
+        ApiConstants.paymentConfirmCard(rideId),
+        data: {'session_id': sessionId},
+      );
+      return res.statusCode == 200;
+    } on DioException {
+      return false;
+    }
+  }
+
   String _msg(dynamic data) {
     if (data is Map && data['message'] is String) return data['message'];
     return 'Something went wrong';
