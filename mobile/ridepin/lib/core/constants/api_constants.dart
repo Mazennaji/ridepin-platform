@@ -11,6 +11,9 @@ class ApiConstants {
   static String rideById(int id) => '/rides/$id';
   static String cancelRide(int id) => '/rides/$id/cancel';
   static String rateRide(int id) => '/rides/$id/rate';
+  static String paymentCheckout(int id) => '/rides/$id/payment/intent';
+  static String paymentConfirmCard(int id) => '/rides/$id/payment/card';
+  static String paymentCash(int id) => '/rides/$id/payment/cash';
 
   static const String availableRides = '/driver/rides/available';
   static String acceptRide(int id) => '/driver/rides/$id/accept';
