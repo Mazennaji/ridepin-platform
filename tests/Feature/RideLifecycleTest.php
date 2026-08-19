@@ -72,6 +72,14 @@ class RideLifecycleTest extends TestCase
         return $res->json('ride.id');
     }
 
+    private function completeRide(int $rideId, User $driver): void
+    {
+        Sanctum::actingAs($driver);
+        $this->postJson("/api/driver/rides/{$rideId}/accept");
+        $this->postJson("/api/driver/rides/{$rideId}/start");
+        $this->postJson("/api/driver/rides/{$rideId}/complete");
+    }
+
     public function test_rider_can_create_a_pending_ride(): void
     {
         $rider = $this->makeRider();
@@ -83,7 +91,7 @@ class RideLifecycleTest extends TestCase
             ->assertJsonPath('ride.status', 'pending');
     }
 
-    public function test_full_lifecycle_generates_a_transaction(): void
+    public function test_full_lifecycle_generates_a_pending_transaction(): void
     {
         $rider = $this->makeRider();
         $driver = $this->makeDriver();
@@ -102,6 +110,24 @@ class RideLifecycleTest extends TestCase
 
         $this->assertDatabaseHas('transactions', [
             'ride_id' => $rideId,
+            'payment_status' => 'pending',
+        ]);
+    }
+
+    public function test_rider_can_pay_cash_for_a_completed_ride(): void
+    {
+        $rider = $this->makeRider();
+        $driver = $this->makeDriver();
+        $rideId = $this->createRide($rider);
+        $this->completeRide($rideId, $driver);
+
+        Sanctum::actingAs($rider);
+        $this->postJson("/api/rides/{$rideId}/payment/cash")
+            ->assertStatus(200);
+
+        $this->assertDatabaseHas('transactions', [
+            'ride_id' => $rideId,
+            'payment_method' => 'cash',
             'payment_status' => 'paid',
         ]);
     }
@@ -111,11 +137,7 @@ class RideLifecycleTest extends TestCase
         $rider = $this->makeRider();
         $driver = $this->makeDriver();
         $rideId = $this->createRide($rider);
-
-        Sanctum::actingAs($driver);
-        $this->postJson("/api/driver/rides/{$rideId}/accept");
-        $this->postJson("/api/driver/rides/{$rideId}/start");
-        $this->postJson("/api/driver/rides/{$rideId}/complete");
+        $this->completeRide($rideId, $driver);
 
         Sanctum::actingAs($rider);
         $this->postJson("/api/rides/{$rideId}/rate", [
