@@ -78,6 +78,31 @@ class AuthService {
     }
   }
 
+  Future<AuthResult> updateProfile(Map<String, dynamic> data) async {
+    try {
+      final res = await _api.dio.put(ApiConstants.profile, data: data);
+      if (res.statusCode == 200 && res.data['user'] is Map) {
+        final user = AppUser.fromJson(
+          Map<String, dynamic>.from(res.data['user']),
+        );
+        await _storage.saveAuth(
+          token: (await _storage.getToken()) ?? '',
+          userId: user.id,
+          role: user.roleName ?? '',
+          name: user.name,
+          email: user.email,
+        );
+        return AuthResult(success: true, user: user);
+      }
+      return AuthResult(
+        success: false,
+        error: _msg(res.data, fallback: 'Update failed'),
+      );
+    } on DioException catch (e) {
+      return AuthResult(success: false, error: _dioMsg(e));
+    }
+  }
+
   Future<Map<String, dynamic>?> fetchProfile() async {
     try {
       final res = await _api.dio.get(ApiConstants.profile);
