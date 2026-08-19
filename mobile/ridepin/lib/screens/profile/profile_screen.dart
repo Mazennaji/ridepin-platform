@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
+import '../../models/ride.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_service.dart';
+import '../../services/ride_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,6 +15,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? _user;
+  List<Ride> _rides = [];
   bool _loading = true;
 
   @override
@@ -22,11 +25,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _load() async {
-    final service = context.read<AuthService>();
-    final data = await service.fetchProfile();
+    final auth = context.read<AuthService>();
+    final rideService = context.read<RideService>();
+    final data = await auth.fetchProfile();
+    List<Ride> rides = [];
+    try {
+      rides = await rideService.myRides();
+    } catch (_) {}
     if (mounted) {
       setState(() {
         _user = data;
+        _rides = rides;
         _loading = false;
       });
     }
@@ -38,6 +47,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? get _driverProfile => _user?['driver_profile'] is Map
       ? Map<String, dynamic>.from(_user!['driver_profile'])
       : null;
+
+  int get _totalRides => _rides.length;
+  int get _completedRides => _rides.where((r) => r.isCompleted).length;
+
+  double get _totalSpent => _rides
+      .where((r) => r.transaction?.paymentStatus == 'paid')
+      .fold(0.0, (sum, r) => sum + (r.transaction?.amount ?? 0));
+
+  double? get _avgRatingReceived {
+    // Driver: average of ratings on their completed rides
+    final rated = _rides.where((r) => r.rating != null).toList();
+    if (rated.isEmpty) return null;
+    final total = rated.fold(0, (sum, r) => sum + (r.rating?.score ?? 0));
+    return total / rated.length;
+  }
+
+  String? get _memberSince {
+    final created = _user?['created_at'];
+    if (created == null) return null;
+    final dt = DateTime.tryParse(created.toString());
+    if (dt == null) return null;
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return '${months[dt.month - 1]} ${dt.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ? name.trim().split(' ').map((p) => p[0]).take(2).join().toUpperCase()
         : '?';
     final dp = _driverProfile;
+    final isDriver = _role == 'driver';
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
@@ -123,10 +170,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
+              if (_memberSince != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Member since ${_memberSince!}',
+                  style: const TextStyle(
+                    color: AppColors.textFaint,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 28),
+        Row(
+          children: [
+            _statCard(
+              isDriver ? 'Rides driven' : 'Total rides',
+              '$_totalRides',
+            ),
+            const SizedBox(width: 12),
+            _statCard('Completed', '$_completedRides'),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            _statCard(
+              isDriver ? 'Earnings' : 'Total spent',
+              '\$${_totalSpent.toStringAsFixed(2)}',
+            ),
+            const SizedBox(width: 12),
+            _statCard(
+              'Rating',
+              _avgRatingReceived == null
+                  ? '—'
+                  : _avgRatingReceived!.toStringAsFixed(1),
+              icon: _avgRatingReceived != null ? Icons.star_rounded : null,
+            ),
+          ],
+        ),
+        const SizedBox(height: 28),
         _section('ACCOUNT'),
         _card([
           _row(Icons.email_outlined, 'Email', email),
@@ -183,6 +268,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _statCard(String label, String value, {IconData? icon}) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.line),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (icon != null) ...[
+                  Icon(icon, size: 18, color: AppColors.signal),
+                  const SizedBox(width: 4),
+                ],
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: AppColors.text,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: const TextStyle(color: AppColors.textDim, fontSize: 13),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
