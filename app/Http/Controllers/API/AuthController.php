@@ -11,7 +11,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-
+use App\Http\Requests\UpdateProfileRequest;
 class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
@@ -110,5 +110,53 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully',
         ]);
+    }
+
+    public function updateProfile(UpdateProfileRequest $request): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+
+            $userData = [];
+            if ($request->filled('name')) {
+                $userData['name'] = $request->name;
+            }
+            if ($request->has('phone')) {
+                $userData['phone'] = $request->phone;
+            }
+            if ($request->filled('password')) {
+                $userData['password'] = Hash::make($request->password);
+            }
+
+            if (!empty($userData)) {
+                $user->update($userData);
+            }
+
+            if ($user->isDriver() && $user->driverProfile) {
+                $profileData = [];
+                foreach (['license_number', 'vehicle_type', 'vehicle_model', 'plate_number'] as $field) {
+                    if ($request->filled($field)) {
+                        $profileData[$field] = $request->$field;
+                    }
+                }
+                if (!empty($profileData)) {
+                    $user->driverProfile->update($profileData);
+                }
+            }
+
+            return response()->json([
+                'message' => 'Profile updated successfully',
+                'user' => $user->fresh()->load('role', 'driverProfile'),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Profile update failed', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'Profile update failed',
+            ], 500);
+        }
     }
 }
