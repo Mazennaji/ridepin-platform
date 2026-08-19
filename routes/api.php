@@ -4,6 +4,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\RideController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\PaymentController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -24,4 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/driver/rides/{id}/complete', [DriverController::class, 'complete']);
     Route::post('/driver/toggle-availability', [DriverController::class, 'toggleAvailability']);
     Route::post('/rides/estimate', [RideController::class, 'estimate']);
+    Route::post('/rides/{id}/payment/intent', [PaymentController::class, 'createIntent']);
+    Route::post('/rides/{id}/payment/confirm', [PaymentController::class, 'confirm']);
 });
