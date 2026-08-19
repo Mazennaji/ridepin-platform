@@ -135,9 +135,8 @@ class DriverController extends Controller
                         'user_id' => $ride->rider_id,
                         'amount' => $ride->fare ?? 10.00,
                         'payment_method' => 'cash',
-                        'payment_status' => 'paid',
+                        'payment_status' => 'pending',
                         'transaction_reference' => 'TXN-' . strtoupper(Str::random(10)),
-                        'paid_at' => now(),
                     ]);
                 }
             });
