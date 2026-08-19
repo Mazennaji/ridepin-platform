@@ -27,4 +27,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/rides/estimate', [RideController::class, 'estimate']);
     Route::post('/rides/{id}/payment/intent', [PaymentController::class, 'createIntent']);
     Route::post('/rides/{id}/payment/confirm', [PaymentController::class, 'confirm']);
+
+    Route::post('/rides/{id}/payment/intent', [PaymentController::class, 'createIntent']);
+    Route::post('/rides/{id}/payment/card', [PaymentController::class, 'confirmCard']);
+    Route::post('/rides/{id}/payment/cash', [PaymentController::class, 'payCash']);
 });

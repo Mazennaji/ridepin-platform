@@ -62,7 +62,7 @@ class PaymentController extends Controller
         }
     }
 
-    public function confirm(Request $request, $rideId): JsonResponse
+    public function confirmCard(Request $request, $rideId): JsonResponse
     {
         $validated = $request->validate([
             'payment_intent_id' => ['required', 'string'],
