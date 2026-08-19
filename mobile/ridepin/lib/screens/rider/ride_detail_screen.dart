@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/ride.dart';
 import '../../services/ride_service.dart';
@@ -21,6 +22,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   int _score = 5;
   final _comment = TextEditingController();
   bool _rating = false;
+  bool _paying = false;
 
   @override
   void initState() {
@@ -51,9 +53,69 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     }
   }
 
+  bool get _needsPayment {
+    final r = _ride;
+    if (r == null) return false;
+    return r.isCompleted &&
+        r.transaction != null &&
+        r.transaction!.paymentStatus != 'paid';
+  }
+
   Future<void> _cancel() async {
     final ok = await context.read<RideProvider>().cancelRide(widget.rideId);
     if (ok) _load();
+  }
+
+  Future<void> _payCash() async {
+    setState(() => _paying = true);
+    final service = context.read<RideService>();
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await service.payCash(widget.rideId);
+    if (!mounted) return;
+    setState(() => _paying = false);
+    if (ok) {
+      _load();
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Cash payment recorded'),
+          backgroundColor: AppColors.surfaceAlt,
+        ),
+      );
+    } else {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Could not record payment'),
+          backgroundColor: AppColors.surfaceAlt,
+        ),
+      );
+    }
+  }
+
+  Future<void> _payCard() async {
+    setState(() => _paying = true);
+    final service = context.read<RideService>();
+    final messenger = ScaffoldMessenger.of(context);
+    final url = await service.startCardCheckout(widget.rideId);
+    if (!mounted) return;
+    setState(() => _paying = false);
+    if (url != null) {
+      final uri = Uri.parse(url);
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!mounted) return;
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Complete payment in the opened tab, then refresh.'),
+          backgroundColor: AppColors.surfaceAlt,
+        ),
+      );
+    } else {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Could not start card payment'),
+          backgroundColor: AppColors.surfaceAlt,
+        ),
+      );
+    }
   }
 
   Future<void> _submitRating() async {
@@ -81,7 +143,15 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ride details')),
+      appBar: AppBar(
+        title: const Text('Ride details'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: AppColors.textDim),
+            onPressed: _load,
+          ),
+        ],
+      ),
       body: _loading
           ? const Center(
               child: CircularProgressIndicator(color: AppColors.signal),
@@ -133,7 +203,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
         _infoRow('Distance', '${ride.distance.toStringAsFixed(1)} km'),
         if (ride.transaction != null) ...[
           _infoRow('Payment', ride.transaction!.paymentMethod.toUpperCase()),
-          _infoRow('Reference', ride.transaction!.transactionReference),
+          _infoRow('Status', ride.transaction!.paymentStatus.toUpperCase()),
+          if (ride.transaction!.paymentStatus == 'paid')
+            _infoRow('Reference', ride.transaction!.transactionReference),
         ],
         const SizedBox(height: 24),
         if (ride.isPending)
@@ -152,10 +224,77 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
           ),
+        if (_needsPayment) _paymentBlock(ride),
         if (ride.canBeRated) _ratingBlock(),
         if (ride.isCompleted && ride.rating != null)
           _ratedSummary(ride.rating!.score, ride.rating!.comment),
       ],
+    );
+  }
+
+  Widget _paymentBlock(Ride ride) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.signal.withValues(alpha: 0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Payment due',
+            style: TextStyle(
+              color: AppColors.text,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Pay \$${ride.fare.toStringAsFixed(2)} for this trip.',
+            style: const TextStyle(color: AppColors.textDim, fontSize: 13),
+          ),
+          const SizedBox(height: 16),
+          if (_paying)
+            const Center(
+              child: CircularProgressIndicator(color: AppColors.signal),
+            )
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.text,
+                      minimumSize: const Size.fromHeight(52),
+                      side: const BorderSide(color: AppColors.line),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    onPressed: _payCash,
+                    icon: const Icon(Icons.payments_outlined, size: 18),
+                    label: const Text('Cash'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(52),
+                    ),
+                    onPressed: _payCard,
+                    icon: const Icon(Icons.credit_card, size: 18),
+                    label: const Text('Card'),
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 
