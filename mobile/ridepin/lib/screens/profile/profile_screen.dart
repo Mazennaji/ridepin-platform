@@ -5,6 +5,7 @@ import '../../models/ride.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/ride_service.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -88,7 +89,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(
+        title: const Text('Profile'),
+        actions: [
+          if (_user != null)
+            IconButton(
+              icon: const Icon(Icons.edit_outlined, color: AppColors.textDim),
+              onPressed: () async {
+                final changed = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(
+                    builder: (_) => EditProfileScreen(user: _user!),
+                  ),
+                );
+                if (changed == true) _load();
+              },
+            ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: _loading
           ? const Center(
               child: CircularProgressIndicator(color: AppColors.signal),
