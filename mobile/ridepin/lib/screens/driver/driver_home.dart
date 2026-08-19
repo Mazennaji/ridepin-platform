@@ -5,6 +5,7 @@ import '../../models/ride.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/driver_provider.dart';
 import '../../widgets/brand.dart';
+import '../profile/profile_screen.dart';
 import '../../widgets/route_line.dart';
 import 'active_ride_screen.dart';
 
@@ -37,8 +38,10 @@ class _DriverHomeState extends State<DriverHome> {
         title: const BrandMark(size: 30),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: AppColors.textDim),
-            onPressed: () => context.read<AuthProvider>().logout(),
+            icon: const Icon(Icons.person_outline, color: AppColors.textDim),
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
           ),
           const SizedBox(width: 8),
         ],
