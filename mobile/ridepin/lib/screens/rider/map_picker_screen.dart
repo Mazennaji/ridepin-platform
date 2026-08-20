@@ -111,7 +111,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.touch_app,
                     size: 18,
                     color: AppColors.signal,
@@ -120,7 +120,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                   Expanded(
                     child: Text(
                       _hint,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.text,
                         fontSize: 13,
                       ),

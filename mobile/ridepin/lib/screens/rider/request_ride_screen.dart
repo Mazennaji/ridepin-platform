@@ -100,7 +100,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_pickupLatLng == null || _dropoffLatLng == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Pick your locations on the map first'),
           backgroundColor: AppColors.surfaceAlt,
         ),
@@ -109,7 +109,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
     }
     if (_scheduleLater && _scheduledAt == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Pick a date and time for your scheduled ride'),
           backgroundColor: AppColors.surfaceAlt,
         ),
@@ -184,7 +184,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.map_outlined,
                               color: AppColors.signal,
                             ),
@@ -194,13 +194,13 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                                 _pickupLatLng == null
                                     ? 'Choose pickup & drop-off on map'
                                     : 'Locations set — tap to change',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppColors.text,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
-                            const Icon(
+                            Icon(
                               Icons.chevron_right,
                               color: AppColors.textDim,
                             ),
@@ -211,7 +211,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _pickup,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: const InputDecoration(
                         hintText: 'Pickup label',
                       ),
@@ -222,7 +222,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _dropoff,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: const InputDecoration(
                         hintText: 'Drop-off label',
                       ),
@@ -239,7 +239,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(color: AppColors.line),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
                             SizedBox(
                               width: 18,
@@ -273,7 +273,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Estimated fare',
                                   style: TextStyle(
                                     color: AppColors.textDim,
@@ -283,7 +283,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                                 const SizedBox(height: 2),
                                 Text(
                                   '${_estimate!.distance.toStringAsFixed(1)} km trip',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: AppColors.text,
                                     fontSize: 13,
                                   ),
@@ -292,7 +292,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                             ),
                             Text(
                               '\$${_estimate!.fare.toStringAsFixed(2)}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.text,
                                 fontSize: 22,
                                 fontWeight: FontWeight.w800,
@@ -316,7 +316,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                         children: [
                           SwitchListTile(
                             contentPadding: EdgeInsets.zero,
-                            title: const Text(
+                            title: Text(
                               'Schedule for later',
                               style: TextStyle(
                                 color: AppColors.text,
@@ -347,7 +347,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.schedule,
                                         size: 18,
                                         color: AppColors.signal,
@@ -357,7 +357,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                                         _scheduledAt == null
                                             ? 'Pick date & time'
                                             : _formatDateTime(_scheduledAt!),
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           color: AppColors.text,
                                         ),
                                       ),

@@ -76,14 +76,14 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     if (ok) {
       _load();
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Cash payment recorded'),
           backgroundColor: AppColors.surfaceAlt,
         ),
       );
     } else {
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Could not record payment'),
           backgroundColor: AppColors.surfaceAlt,
         ),
@@ -103,14 +103,14 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!mounted) return;
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Complete payment in the opened tab, then refresh.'),
           backgroundColor: AppColors.surfaceAlt,
         ),
       );
     } else {
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Could not start card payment'),
           backgroundColor: AppColors.surfaceAlt,
         ),
@@ -132,7 +132,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     if (ok) {
       _load();
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Thanks for the rating'),
           backgroundColor: AppColors.surfaceAlt,
         ),
@@ -147,17 +147,17 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
         title: const Text('Ride details'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: AppColors.textDim),
+            icon: Icon(Icons.refresh, color: AppColors.textDim),
             onPressed: _load,
           ),
         ],
       ),
       body: _loading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(color: AppColors.signal),
             )
           : _ride == null
-          ? const Center(
+          ? Center(
               child: Text(
                 'Ride not found',
                 style: TextStyle(color: AppColors.textDim),
@@ -177,7 +177,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
             StatusPill(status: ride.status),
             Text(
               '\$${ride.fare.toStringAsFixed(2)}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.text,
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
@@ -213,7 +213,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.danger,
               minimumSize: const Size.fromHeight(52),
-              side: const BorderSide(color: AppColors.danger),
+              side: BorderSide(color: AppColors.danger),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -244,7 +244,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Payment due',
             style: TextStyle(
               color: AppColors.text,
@@ -255,11 +255,11 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           const SizedBox(height: 4),
           Text(
             'Pay \$${ride.fare.toStringAsFixed(2)} for this trip.',
-            style: const TextStyle(color: AppColors.textDim, fontSize: 13),
+            style: TextStyle(color: AppColors.textDim, fontSize: 13),
           ),
           const SizedBox(height: 16),
           if (_paying)
-            const Center(
+            Center(
               child: CircularProgressIndicator(color: AppColors.signal),
             )
           else
@@ -270,7 +270,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.text,
                       minimumSize: const Size.fromHeight(52),
-                      side: const BorderSide(color: AppColors.line),
+                      side: BorderSide(color: AppColors.line),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -304,12 +304,12 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.textDim)),
+          Text(label, style: TextStyle(color: AppColors.textDim)),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.text,
                 fontWeight: FontWeight.w600,
               ),
@@ -332,7 +332,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Rate your driver',
             style: TextStyle(
               color: AppColors.text,
@@ -362,7 +362,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           const SizedBox(height: 14),
           TextField(
             controller: _comment,
-            style: const TextStyle(color: AppColors.text),
+            style: TextStyle(color: AppColors.text),
             maxLines: 2,
             decoration: const InputDecoration(
               hintText: 'Add a comment (optional)',
@@ -399,7 +399,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'YOUR RATING',
             style: TextStyle(
               color: AppColors.textDim,
@@ -421,7 +421,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           ),
           if (comment != null && comment.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(comment, style: const TextStyle(color: AppColors.text)),
+            Text(comment, style: TextStyle(color: AppColors.text)),
           ],
         ],
       ),

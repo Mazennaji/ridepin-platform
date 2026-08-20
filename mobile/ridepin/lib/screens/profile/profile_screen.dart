@@ -95,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           if (_user != null)
             IconButton(
-              icon: const Icon(Icons.edit_outlined, color: AppColors.textDim),
+              icon: Icon(Icons.edit_outlined, color: AppColors.textDim),
               onPressed: () async {
                 final changed = await Navigator.of(context).push<bool>(
                   MaterialPageRoute(
@@ -109,11 +109,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       body: _loading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(color: AppColors.signal),
             )
           : _user == null
-          ? const Center(
+          ? Center(
               child: Text(
                 'Could not load profile',
                 style: TextStyle(color: AppColors.textDim),
@@ -160,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 16),
               Text(
                 name,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.text,
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
@@ -181,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: Text(
                   _role.toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.signal,
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
@@ -193,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 8),
                 Text(
                   'Member since ${_memberSince!}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textFaint,
                     fontSize: 13,
                   ),
@@ -246,7 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(width: 14),
                   Text(
                     theme.isDark ? 'Dark mode' : 'Light mode',
-                    style: const TextStyle(color: AppColors.textDim),
+                    style: TextStyle(color: AppColors.textDim),
                   ),
                   const Spacer(),
                   Switch(
@@ -303,7 +303,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.danger,
             minimumSize: const Size.fromHeight(52),
-            side: const BorderSide(color: AppColors.danger),
+            side: BorderSide(color: AppColors.danger),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
@@ -339,7 +339,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.text,
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
@@ -350,7 +350,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(color: AppColors.textDim, fontSize: 13),
+              style: TextStyle(color: AppColors.textDim, fontSize: 13),
             ),
           ],
         ),
@@ -363,7 +363,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.only(bottom: 10, left: 4),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.textFaint,
           fontSize: 11,
           fontWeight: FontWeight.w800,
@@ -391,13 +391,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Icon(icon, size: 20, color: AppColors.textDim),
           const SizedBox(width: 14),
-          Text(label, style: const TextStyle(color: AppColors.textDim)),
+          Text(label, style: TextStyle(color: AppColors.textDim)),
           const Spacer(),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.text,
                 fontWeight: FontWeight.w600,
               ),

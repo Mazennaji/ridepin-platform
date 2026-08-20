@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           // Ambient gradient backdrop
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         _Hero(),
                         const SizedBox(height: 40),
-                        const Text(
+                        Text(
                           'Welcome back',
                           style: TextStyle(
                             color: AppColors.text,
@@ -99,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Sign in to book a ride or hit the road.',
                           style: TextStyle(
                             color: AppColors.textDim,
@@ -112,8 +112,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextFormField(
                           controller: _email,
                           keyboardType: TextInputType.emailAddress,
-                          style: const TextStyle(color: AppColors.text),
-                          decoration: const InputDecoration(
+                          style: TextStyle(color: AppColors.text),
+                          decoration: InputDecoration(
                             hintText: 'you@example.com',
                             prefixIcon: Icon(
                               Icons.mail_outline,
@@ -131,10 +131,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextFormField(
                           controller: _password,
                           obscureText: _obscure,
-                          style: const TextStyle(color: AppColors.text),
+                          style: TextStyle(color: AppColors.text),
                           decoration: InputDecoration(
                             hintText: '••••••••',
-                            prefixIcon: const Icon(
+                            prefixIcon: Icon(
                               Icons.lock_outline,
                               color: AppColors.textFaint,
                               size: 20,
@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
+                            Text(
                               "New to RidePin?",
                               style: TextStyle(color: AppColors.textDim),
                             ),
@@ -218,7 +218,7 @@ class _Hero extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 18),
-        const Text(
+        Text(
           'RidePin',
           style: TextStyle(
             color: AppColors.text,
@@ -241,7 +241,7 @@ class _FieldLabel extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.textFaint,
           fontSize: 11,
           fontWeight: FontWeight.w800,

@@ -38,7 +38,7 @@ class _DriverHomeState extends State<DriverHome> {
         title: const BrandMark(size: 30),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_outline, color: AppColors.textDim),
+            icon: Icon(Icons.person_outline, color: AppColors.textDim),
             onPressed: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
@@ -55,7 +55,7 @@ class _DriverHomeState extends State<DriverHome> {
           children: [
             Text(
               'Hi ${auth.user?.name.split(' ').first ?? ''}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.text,
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
@@ -71,7 +71,7 @@ class _DriverHomeState extends State<DriverHome> {
                 final ok = await provider.toggleAvailability(v);
                 if (!ok) {
                   messenger.showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text('Could not update availability'),
                       backgroundColor: AppColors.surfaceAlt,
                     ),
@@ -83,7 +83,7 @@ class _DriverHomeState extends State<DriverHome> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'AVAILABLE RIDES',
                   style: TextStyle(
                     color: AppColors.textFaint,
@@ -95,7 +95,7 @@ class _DriverHomeState extends State<DriverHome> {
                 if (driver.available.isNotEmpty)
                   Text(
                     '${driver.available.length}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.signal,
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -105,7 +105,7 @@ class _DriverHomeState extends State<DriverHome> {
             ),
             const SizedBox(height: 12),
             if (driver.loading && driver.available.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 40),
                 child: Center(
                   child: CircularProgressIndicator(color: AppColors.signal),
@@ -242,11 +242,11 @@ class _RequestCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.person, size: 16, color: AppColors.textDim),
+                  Icon(Icons.person, size: 16, color: AppColors.textDim),
                   const SizedBox(width: 6),
                   Text(
                     ride.rider?.name ?? 'Rider',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.text,
                       fontWeight: FontWeight.w600,
                     ),
@@ -255,7 +255,7 @@ class _RequestCard extends StatelessWidget {
               ),
               Text(
                 '\$${ride.fare.toStringAsFixed(2)}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.text,
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
@@ -295,7 +295,7 @@ class _Hint extends StatelessWidget {
       child: Text(
         text,
         textAlign: TextAlign.center,
-        style: const TextStyle(color: AppColors.textDim, fontSize: 14),
+        style: TextStyle(color: AppColors.textDim, fontSize: 14),
       ),
     );
   }

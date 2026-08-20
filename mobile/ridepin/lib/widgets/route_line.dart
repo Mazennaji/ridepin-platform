@@ -23,7 +23,7 @@ class RouteLine extends StatelessWidget {
               ),
             ),
             Container(width: 2, height: 34, color: AppColors.line),
-            const Icon(Icons.location_on, size: 15, color: AppColors.danger),
+            Icon(Icons.location_on, size: 15, color: AppColors.danger),
           ],
         ),
         const SizedBox(width: 14),
@@ -31,7 +31,7 @@ class RouteLine extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'PICKUP',
                 style: TextStyle(
                   color: AppColors.textFaint,
@@ -43,14 +43,14 @@ class RouteLine extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 pickup,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.text,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'DROP-OFF',
                 style: TextStyle(
                   color: AppColors.textFaint,
@@ -62,7 +62,7 @@ class RouteLine extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 dropoff,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.text,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,

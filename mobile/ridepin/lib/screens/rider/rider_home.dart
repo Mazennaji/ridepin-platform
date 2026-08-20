@@ -42,7 +42,7 @@ class _RiderHomeState extends State<RiderHome> {
         title: const BrandMark(size: 30),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_outline, color: AppColors.textDim),
+            icon: Icon(Icons.person_outline, color: AppColors.textDim),
             onPressed: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
@@ -59,7 +59,7 @@ class _RiderHomeState extends State<RiderHome> {
           children: [
             Text(
               'Hi ${auth.user?.name.split(' ').first ?? ''}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.text,
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
@@ -67,7 +67,7 @@ class _RiderHomeState extends State<RiderHome> {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Where are you headed?',
               style: TextStyle(color: AppColors.textDim, fontSize: 15),
             ),
@@ -81,7 +81,7 @@ class _RiderHomeState extends State<RiderHome> {
             const _SectionLabel('History'),
             const SizedBox(height: 12),
             if (rides.loading && rides.rides.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 40),
                 child: Center(
                   child: CircularProgressIndicator(color: AppColors.signal),
@@ -138,7 +138,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text.toUpperCase(),
-      style: const TextStyle(
+      style: TextStyle(
         color: AppColors.textFaint,
         fontSize: 11,
         fontWeight: FontWeight.w800,
@@ -186,7 +186,7 @@ class _RideCard extends StatelessWidget {
                             color: AppColors.info.withValues(alpha: 0.35),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
@@ -211,7 +211,7 @@ class _RideCard extends StatelessWidget {
                 ),
                 Text(
                   '\$${ride.fare.toStringAsFixed(2)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.text,
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -246,13 +246,13 @@ class _Empty extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Icon(
+          Icon(
             Icons.route_outlined,
             color: AppColors.textFaint,
             size: 34,
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'No rides yet',
             style: TextStyle(
               color: AppColors.text,
@@ -264,7 +264,7 @@ class _Empty extends StatelessWidget {
           Text(
             showHint ? 'Book your first ride to get moving.' : '',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textDim, fontSize: 14),
+            style: TextStyle(color: AppColors.textDim, fontSize: 14),
           ),
         ],
       ),

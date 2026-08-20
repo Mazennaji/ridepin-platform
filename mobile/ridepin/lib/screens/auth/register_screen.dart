@@ -70,7 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
+                    Text(
                       'Create account',
                       style: TextStyle(
                         color: AppColors.text,
@@ -80,7 +80,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Join as a rider or a driver.',
                       style: TextStyle(color: AppColors.textDim, fontSize: 15),
                     ),
@@ -92,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20),
                     TextFormField(
                       controller: _name,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: const InputDecoration(hintText: 'Full name'),
                       validator: (v) => (v == null || v.trim().isEmpty)
                           ? 'Enter your name'
@@ -102,7 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     TextFormField(
                       controller: _email,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: const InputDecoration(hintText: 'Email'),
                       validator: (v) => (v == null || !v.contains('@'))
                           ? 'Enter a valid email'
@@ -112,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     TextFormField(
                       controller: _phone,
                       keyboardType: TextInputType.phone,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: const InputDecoration(
                         hintText: 'Phone (optional)',
                       ),
@@ -121,7 +121,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     TextFormField(
                       controller: _password,
                       obscureText: _obscure,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: InputDecoration(
                         hintText: 'Password',
                         suffixIcon: IconButton(
@@ -142,7 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     TextFormField(
                       controller: _confirm,
                       obscureText: _obscure,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: const InputDecoration(
                         hintText: 'Confirm password',
                       ),
@@ -173,7 +173,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: AppColors.line),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
                             Icon(
                               Icons.info_outline,

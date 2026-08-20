@@ -17,7 +17,7 @@ class ActiveRideScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Active ride')),
       body: ride == null
-          ? const Center(
+          ? Center(
               child: Text(
                 'No active ride',
                 style: TextStyle(color: AppColors.textDim),
@@ -32,7 +32,7 @@ class ActiveRideScreen extends StatelessWidget {
                     StatusPill(status: ride.status),
                     Text(
                       '\$${ride.fare.toStringAsFixed(2)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.text,
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
@@ -52,7 +52,7 @@ class ActiveRideScreen extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.person,
                             size: 18,
                             color: AppColors.textDim,
@@ -60,14 +60,14 @@ class ActiveRideScreen extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             ride.rider?.name ?? 'Rider',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.text,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
-                      const Divider(color: AppColors.line, height: 28),
+                      Divider(color: AppColors.line, height: 28),
                       RouteLine(
                         pickup: ride.pickupLocation,
                         dropoff: ride.dropoffLocation,
@@ -245,13 +245,13 @@ class _TransactionCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.check_circle,
                 color: AppColors.success,
                 size: 20,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Payment received',
                 style: TextStyle(
                   color: AppColors.success,
@@ -262,7 +262,7 @@ class _TransactionCard extends StatelessWidget {
               const Spacer(),
               Text(
                 '\$${t.amount.toStringAsFixed(2)}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.text,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -273,7 +273,7 @@ class _TransactionCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             '${t.paymentMethod.toUpperCase()}  ·  ${t.transactionReference}',
-            style: const TextStyle(color: AppColors.textDim, fontSize: 13),
+            style: TextStyle(color: AppColors.textDim, fontSize: 13),
           ),
         ],
       ),

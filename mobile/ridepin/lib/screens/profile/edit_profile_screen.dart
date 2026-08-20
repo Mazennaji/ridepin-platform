@@ -93,7 +93,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (res.success) {
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Profile updated'),
           backgroundColor: AppColors.surfaceAlt,
         ),
@@ -127,7 +127,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _label('Name'),
                     TextFormField(
                       controller: _name,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: const InputDecoration(hintText: 'Full name'),
                       validator: (v) => (v == null || v.trim().isEmpty)
                           ? 'Enter your name'
@@ -138,7 +138,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     TextFormField(
                       controller: _phone,
                       keyboardType: TextInputType.phone,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: const InputDecoration(
                         hintText: 'Phone (optional)',
                       ),
@@ -150,7 +150,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _label('License number'),
                       TextFormField(
                         controller: _license,
-                        style: const TextStyle(color: AppColors.text),
+                        style: TextStyle(color: AppColors.text),
                         decoration: const InputDecoration(
                           hintText: 'License number',
                         ),
@@ -159,7 +159,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _label('Vehicle type'),
                       TextFormField(
                         controller: _vehicleType,
-                        style: const TextStyle(color: AppColors.text),
+                        style: TextStyle(color: AppColors.text),
                         decoration: const InputDecoration(
                           hintText: 'e.g. Sedan, SUV',
                         ),
@@ -168,7 +168,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _label('Vehicle model'),
                       TextFormField(
                         controller: _vehicleModel,
-                        style: const TextStyle(color: AppColors.text),
+                        style: TextStyle(color: AppColors.text),
                         decoration: const InputDecoration(
                           hintText: 'e.g. Toyota Corolla 2020',
                         ),
@@ -177,7 +177,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _label('Plate number'),
                       TextFormField(
                         controller: _plate,
-                        style: const TextStyle(color: AppColors.text),
+                        style: TextStyle(color: AppColors.text),
                         decoration: const InputDecoration(
                           hintText: 'Plate number',
                         ),
@@ -186,7 +186,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(height: 24),
                     _sectionTitle('Change password'),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'Leave blank to keep your current password.',
                       style: TextStyle(
                         color: AppColors.textFaint,
@@ -198,7 +198,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     TextFormField(
                       controller: _password,
                       obscureText: true,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: const InputDecoration(
                         hintText: 'New password',
                       ),
@@ -214,7 +214,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     TextFormField(
                       controller: _passwordConfirm,
                       obscureText: true,
-                      style: const TextStyle(color: AppColors.text),
+                      style: TextStyle(color: AppColors.text),
                       decoration: const InputDecoration(
                         hintText: 'Confirm password',
                       ),
@@ -253,7 +253,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     padding: const EdgeInsets.only(bottom: 8, left: 2),
     child: Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         color: AppColors.textDim,
         fontSize: 13,
         fontWeight: FontWeight.w600,
@@ -263,7 +263,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _sectionTitle(String text) => Text(
     text.toUpperCase(),
-    style: const TextStyle(
+    style: TextStyle(
       color: AppColors.textFaint,
       fontSize: 11,
       fontWeight: FontWeight.w800,
