@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'core/network/api_client.dart';
 import 'core/storage/token_storage.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_controller.dart';
 import 'services/auth_service.dart';
 import 'services/ride_service.dart';
 import 'services/driver_service.dart';
@@ -20,6 +21,7 @@ void main() {
   final authService = AuthService(apiClient, storage);
   final rideService = RideService(apiClient);
   final driverService = DriverService(apiClient);
+  final themeController = ThemeController()..load();
 
   runApp(
     RidePinApp(
@@ -27,6 +29,7 @@ void main() {
       authService: authService,
       rideService: rideService,
       driverService: driverService,
+      themeController: themeController,
     ),
   );
 }
@@ -36,6 +39,7 @@ class RidePinApp extends StatelessWidget {
   final AuthService authService;
   final RideService rideService;
   final DriverService driverService;
+  final ThemeController themeController;
 
   const RidePinApp({
     super.key,
@@ -43,12 +47,14 @@ class RidePinApp extends StatelessWidget {
     required this.authService,
     required this.rideService,
     required this.driverService,
+    required this.themeController,
   });
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: themeController),
         Provider<AuthService>.value(value: authService),
         Provider<RideService>.value(value: rideService),
         Provider<DriverService>.value(value: driverService),
@@ -58,11 +64,20 @@ class RidePinApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RideProvider(rideService)),
         ChangeNotifierProvider(create: (_) => DriverProvider(driverService)),
       ],
-      child: MaterialApp(
-        title: 'RidePin',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const AuthGate(),
+      child: Consumer<ThemeController>(
+        builder: (context, theme, _) {
+          // Keep the static palette in sync with the active mode so that
+          // AppColors.* getters resolve to the correct brightness.
+          AppColors.setDark(theme.isDark);
+          return MaterialApp(
+            title: 'RidePin',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: theme.mode,
+            home: const AuthGate(),
+          );
+        },
       ),
     );
   }
@@ -91,7 +106,7 @@ class _Splash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(child: CircularProgressIndicator(color: AppColors.signal)),
     );
   }
