@@ -13,7 +13,7 @@ class BrandMark extends StatelessWidget {
       width: size,
       height: size,
       fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) => Container(
+      errorBuilder: (context, error, stack) => Container(
         width: size,
         height: size,
         decoration: BoxDecoration(
