@@ -4,9 +4,10 @@ import '../../core/theme/app_theme.dart';
 import '../../models/ride.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/driver_provider.dart';
+import '../../services/ride_service.dart';
 import '../../widgets/brand.dart';
-import '../profile/profile_screen.dart';
 import '../../widgets/route_line.dart';
+import '../profile/profile_screen.dart';
 import 'active_ride_screen.dart';
 
 class DriverHome extends StatefulWidget {
@@ -17,6 +18,8 @@ class DriverHome extends StatefulWidget {
 }
 
 class _DriverHomeState extends State<DriverHome> {
+  List<Ride> _myRides = [];
+
   @override
   void initState() {
     super.initState();
@@ -24,7 +27,27 @@ class _DriverHomeState extends State<DriverHome> {
       context.read<DriverProvider>()
         ..syncAvailability()
         ..loadAvailable();
+      _loadStats();
     });
+  }
+
+  Future<void> _loadStats() async {
+    try {
+      final rides = await context.read<RideService>().myRides();
+      if (mounted) setState(() => _myRides = rides);
+    } catch (_) {}
+  }
+
+  int get _completed => _myRides.where((r) => r.isCompleted).length;
+
+  double get _earnings => _myRides
+      .where((r) => r.transaction?.paymentStatus == 'paid')
+      .fold(0.0, (s, r) => s + (r.transaction?.amount ?? 0));
+
+  double? get _rating {
+    final rated = _myRides.where((r) => r.rating != null).toList();
+    if (rated.isEmpty) return null;
+    return rated.fold(0, (s, r) => s + (r.rating?.score ?? 0)) / rated.length;
   }
 
   @override
@@ -38,7 +61,7 @@ class _DriverHomeState extends State<DriverHome> {
         title: const BrandMark(size: 30),
         actions: [
           IconButton(
-            icon: Icon(Icons.person_outline, color: AppColors.textDim),
+            icon: const Icon(Icons.person_outline, color: AppColors.textDim),
             onPressed: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
@@ -49,21 +72,31 @@ class _DriverHomeState extends State<DriverHome> {
       body: RefreshIndicator(
         color: AppColors.signal,
         backgroundColor: AppColors.surface,
-        onRefresh: () => context.read<DriverProvider>().loadAvailable(),
+        onRefresh: () async {
+          await context.read<DriverProvider>().loadAvailable();
+          await _loadStats();
+        },
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
           children: [
             Text(
               'Hi ${auth.user?.name.split(' ').first ?? ''}',
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.text,
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.6,
               ),
             ),
+            const SizedBox(height: 2),
+            Text(
+              driver.isAvailable
+                  ? 'You are online and ready for trips'
+                  : 'You are offline',
+              style: const TextStyle(color: AppColors.textDim, fontSize: 14),
+            ),
             const SizedBox(height: 20),
-            _AvailabilityCard(
+            _AvailabilityHero(
               isAvailable: driver.isAvailable,
               onToggle: (v) async {
                 final messenger = ScaffoldMessenger.of(context);
@@ -71,7 +104,7 @@ class _DriverHomeState extends State<DriverHome> {
                 final ok = await provider.toggleAvailability(v);
                 if (!ok) {
                   messenger.showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Could not update availability'),
                       backgroundColor: AppColors.surfaceAlt,
                     ),
@@ -79,11 +112,29 @@ class _DriverHomeState extends State<DriverHome> {
                 }
               },
             ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                _stat('Trips', '$_completed', Icons.check_circle_outline),
+                const SizedBox(width: 12),
+                _stat(
+                  'Earnings',
+                  '\$${_earnings.toStringAsFixed(0)}',
+                  Icons.account_balance_wallet_outlined,
+                ),
+                const SizedBox(width: 12),
+                _stat(
+                  'Rating',
+                  _rating == null ? '—' : _rating!.toStringAsFixed(1),
+                  Icons.star_outline,
+                ),
+              ],
+            ),
             const SizedBox(height: 28),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'AVAILABLE RIDES',
                   style: TextStyle(
                     color: AppColors.textFaint,
@@ -93,28 +144,46 @@ class _DriverHomeState extends State<DriverHome> {
                   ),
                 ),
                 if (driver.available.isNotEmpty)
-                  Text(
-                    '${driver.available.length}',
-                    style: TextStyle(
-                      color: AppColors.signal,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.signal.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      '${driver.available.length} nearby',
+                      style: const TextStyle(
+                        color: AppColors.signal,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
               ],
             ),
             const SizedBox(height: 12),
             if (driver.loading && driver.available.isEmpty)
-              Padding(
+              const Padding(
                 padding: EdgeInsets.only(top: 40),
                 child: Center(
                   child: CircularProgressIndicator(color: AppColors.signal),
                 ),
               )
             else if (!driver.isAvailable)
-              const _Hint('Go online to see ride requests near you.')
+              _emptyState(
+                Icons.toggle_off_outlined,
+                'You are offline',
+                'Go online to start receiving ride requests.',
+              )
             else if (driver.available.isEmpty)
-              const _Hint('No requests right now. Pull to refresh.')
+              _emptyState(
+                Icons.radar,
+                'Waiting for requests',
+                'New ride requests will appear here. Pull to refresh.',
+              )
             else
               ...driver.available.map(
                 (r) => Padding(
@@ -124,6 +193,79 @@ class _DriverHomeState extends State<DriverHome> {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _stat(String label, String value, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.line),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 18, color: AppColors.signal),
+            const SizedBox(height: 10),
+            Text(
+              value,
+              style: TextStyle(
+                color: AppColors.text,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(color: AppColors.textDim, fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _emptyState(IconData icon, String title, String sub) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 44, horizontal: 24),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.line),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceAlt,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: AppColors.textDim, size: 26),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: TextStyle(
+              color: AppColors.text,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            sub,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.textDim, fontSize: 14),
+          ),
+        ],
       ),
     );
   }
@@ -149,35 +291,56 @@ class _DriverHomeState extends State<DriverHome> {
   }
 }
 
-class _AvailabilityCard extends StatelessWidget {
+class _AvailabilityHero extends StatelessWidget {
   final bool isAvailable;
   final ValueChanged<bool> onToggle;
-  const _AvailabilityCard({required this.isAvailable, required this.onToggle});
+  const _AvailabilityHero({required this.isAvailable, required this.onToggle});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: isAvailable ? AppColors.signal : AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        gradient: isAvailable
+            ? const LinearGradient(
+                colors: [Color(0xFFFFC44D), AppColors.signal],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: isAvailable ? null : AppColors.surface,
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: isAvailable ? AppColors.signal : AppColors.line,
         ),
+        boxShadow: isAvailable
+            ? [
+                BoxShadow(
+                  color: AppColors.signal.withValues(alpha: 0.3),
+                  blurRadius: 28,
+                  offset: const Offset(0, 8),
+                ),
+              ]
+            : [],
       ),
       child: Row(
         children: [
           Container(
-            width: 12,
-            height: 12,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
               color: isAvailable
-                  ? const Color(0xFF1A1206)
-                  : AppColors.textFaint,
-              shape: BoxShape.circle,
+                  ? const Color(0x261A1206)
+                  : AppColors.surfaceAlt,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              isAvailable ? Icons.bolt : Icons.power_settings_new,
+              color: isAvailable ? const Color(0xFF1A1206) : AppColors.textDim,
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,15 +351,13 @@ class _AvailabilityCard extends StatelessWidget {
                     color: isAvailable
                         ? const Color(0xFF1A1206)
                         : AppColors.text,
-                    fontSize: 17,
+                    fontSize: 18,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  isAvailable
-                      ? 'Receiving ride requests'
-                      : 'Not receiving requests',
+                  isAvailable ? 'Receiving ride requests' : 'Tap to go online',
                   style: TextStyle(
                     color: isAvailable
                         ? const Color(0xCC1A1206)
@@ -242,8 +403,20 @@ class _RequestCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.person, size: 16, color: AppColors.textDim),
-                  const SizedBox(width: 6),
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceAlt,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.person,
+                      size: 18,
+                      color: AppColors.textDim,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
                   Text(
                     ride.rider?.name ?? 'Rider',
                     style: TextStyle(
@@ -274,28 +447,6 @@ class _RequestCard extends StatelessWidget {
             child: const Text('Accept ride'),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _Hint extends StatelessWidget {
-  final String text;
-  const _Hint(this.text);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.line),
-      ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(color: AppColors.textDim, fontSize: 14),
       ),
     );
   }
