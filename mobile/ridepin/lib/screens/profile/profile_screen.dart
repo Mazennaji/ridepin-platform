@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/theme_controller.dart';
 import '../../models/ride.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_service.dart';
@@ -230,6 +231,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
         const SizedBox(height: 28),
+        _section('APPEARANCE'),
+        _card([
+          Consumer<ThemeController>(
+            builder: (context, theme, _) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    theme.isDark ? Icons.dark_mode : Icons.light_mode,
+                    size: 20,
+                    color: AppColors.textDim,
+                  ),
+                  const SizedBox(width: 14),
+                  Text(
+                    theme.isDark ? 'Dark mode' : 'Light mode',
+                    style: const TextStyle(color: AppColors.textDim),
+                  ),
+                  const Spacer(),
+                  Switch(
+                    value: theme.isDark,
+                    activeThumbColor: AppColors.signal,
+                    onChanged: (_) => theme.toggle(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ]),
+        const SizedBox(height: 24),
         _section('ACCOUNT'),
         _card([
           _row(Icons.email_outlined, 'Email', email),
