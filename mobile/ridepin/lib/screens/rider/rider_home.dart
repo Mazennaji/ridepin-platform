@@ -119,15 +119,51 @@ class _RiderHomeState extends State<RiderHome> {
         ),
       ),
       floatingActionButton: active == null
-          ? FloatingActionButton.extended(
-              backgroundColor: AppColors.signal,
-              foregroundColor: const Color(0xFF1A1206),
-              icon: const Icon(Icons.add),
-              label: const Text(
-                'Book a ride',
-                style: TextStyle(fontWeight: FontWeight.w700),
+          ? Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                gradient: LinearGradient(
+                  colors: [Color(0xFFFFC44D), AppColors.signal],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.signal.withValues(alpha: 0.45),
+                    blurRadius: 22,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
-              onPressed: _openRequest,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _openRequest,
+                  borderRadius: BorderRadius.circular(18),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.navigation_rounded,
+                          color: Color(0xFF1A1206),
+                          size: 20,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'Book a ride',
+                          style: TextStyle(
+                            color: Color(0xFF1A1206),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             )
           : null,
     );
