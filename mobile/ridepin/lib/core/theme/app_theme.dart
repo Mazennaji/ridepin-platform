@@ -2,36 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  static const bg = Color(0xFF0B0D12);
-  static const surface = Color(0xFF141821);
-  static const surfaceAlt = Color(0xFF1B2029);
-  static const line = Color(0xFF262C38);
+  static bool _dark = true;
+  static void setDark(bool v) => _dark = v;
+
   static const signal = Color(0xFFFFB020);
   static const signalDim = Color(0xFF6B4E1A);
-  static const text = Color(0xFFF4F6FA);
-  static const textDim = Color(0xFF8A93A6);
-  static const textFaint = Color(0xFF5A6272);
   static const success = Color(0xFF3FCF8E);
   static const danger = Color(0xFFF06B6B);
   static const info = Color(0xFF5B9DFF);
+
+  static Color get bg =>
+      _dark ? const Color(0xFF0B0D12) : const Color(0xFFF5F6F8);
+  static Color get surface =>
+      _dark ? const Color(0xFF141821) : const Color(0xFFFFFFFF);
+  static Color get surfaceAlt =>
+      _dark ? const Color(0xFF1B2029) : const Color(0xFFEDEFF3);
+  static Color get line =>
+      _dark ? const Color(0xFF262C38) : const Color(0xFFE2E5EB);
+  static Color get text =>
+      _dark ? const Color(0xFFF4F6FA) : const Color(0xFF14171F);
+  static Color get textDim =>
+      _dark ? const Color(0xFF8A93A6) : const Color(0xFF5A6272);
+  static Color get textFaint =>
+      _dark ? const Color(0xFF5A6272) : const Color(0xFF9AA1AE);
 }
 
 class AppTheme {
-  static ThemeData get dark {
+  static ThemeData _build(Brightness brightness) {
+    final isDark = brightness == Brightness.dark;
+    AppColors.setDark(isDark);
+
     final base = ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: brightness,
       scaffoldBackgroundColor: AppColors.bg,
-      colorScheme: const ColorScheme.dark(
-        surface: AppColors.surface,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.signal,
+        brightness: brightness,
         primary: AppColors.signal,
-        secondary: AppColors.signal,
+        surface: AppColors.surface,
         error: AppColors.danger,
       ),
     );
 
     return base.copyWith(
-      textTheme: GoogleFonts.interTextTheme(base.textTheme),
+      textTheme: GoogleFonts.interTextTheme(
+        base.textTheme,
+      ).apply(bodyColor: AppColors.text, displayColor: AppColors.text),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.bg,
         foregroundColor: AppColors.text,
@@ -63,27 +80,24 @@ class AppTheme {
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: AppColors.signal,
-          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
-        ),
+        style: TextButton.styleFrom(foregroundColor: AppColors.signal),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surface,
-        hintStyle: GoogleFonts.inter(color: AppColors.textFaint, fontSize: 15),
-        labelStyle: GoogleFonts.inter(color: AppColors.textDim),
+        hintStyle: TextStyle(color: AppColors.textFaint, fontSize: 15),
+        labelStyle: TextStyle(color: AppColors.textDim),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 18,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.line),
+          borderSide: BorderSide(color: AppColors.line),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.line),
+          borderSide: BorderSide(color: AppColors.line),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -96,4 +110,7 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData get dark => _build(Brightness.dark);
+  static ThemeData get light => _build(Brightness.light);
 }
