@@ -47,7 +47,7 @@ class _RiderHomeState extends State<RiderHome> {
         title: const BrandMark(size: 30),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_outline, color: AppColors.textDim),
+            icon: Icon(Icons.person_outline, color: AppColors.textDim),
             onPressed: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
@@ -64,7 +64,7 @@ class _RiderHomeState extends State<RiderHome> {
           children: [
             Text(
               'Hi ${auth.user?.name.split(' ').first ?? ''}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.text,
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
@@ -72,7 +72,7 @@ class _RiderHomeState extends State<RiderHome> {
               ),
             ),
             const SizedBox(height: 2),
-            const Text(
+            Text(
               'Where are you headed today?',
               style: TextStyle(color: AppColors.textDim, fontSize: 14),
             ),
@@ -100,7 +100,7 @@ class _RiderHomeState extends State<RiderHome> {
             const _SectionLabel('HISTORY'),
             const SizedBox(height: 12),
             if (rides.loading && rides.rides.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 40),
                 child: Center(
                   child: CircularProgressIndicator(color: AppColors.signal),
@@ -139,7 +139,7 @@ class _RiderHomeState extends State<RiderHome> {
       child: Container(
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             colors: [Color(0xFFFFC44D), AppColors.signal],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
