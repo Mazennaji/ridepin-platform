@@ -61,7 +61,7 @@ class _DriverHomeState extends State<DriverHome> {
         title: const BrandMark(size: 30),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_outline, color: AppColors.textDim),
+            icon: Icon(Icons.person_outline, color: AppColors.textDim),
             onPressed: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
@@ -81,7 +81,7 @@ class _DriverHomeState extends State<DriverHome> {
           children: [
             Text(
               'Hi ${auth.user?.name.split(' ').first ?? ''}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.text,
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
@@ -93,7 +93,7 @@ class _DriverHomeState extends State<DriverHome> {
               driver.isAvailable
                   ? 'You are online and ready for trips'
                   : 'You are offline',
-              style: const TextStyle(color: AppColors.textDim, fontSize: 14),
+              style: TextStyle(color: AppColors.textDim, fontSize: 14),
             ),
             const SizedBox(height: 20),
             _AvailabilityHero(
@@ -104,7 +104,7 @@ class _DriverHomeState extends State<DriverHome> {
                 final ok = await provider.toggleAvailability(v);
                 if (!ok) {
                   messenger.showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text('Could not update availability'),
                       backgroundColor: AppColors.surfaceAlt,
                     ),
@@ -134,7 +134,7 @@ class _DriverHomeState extends State<DriverHome> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'AVAILABLE RIDES',
                   style: TextStyle(
                     color: AppColors.textFaint,
@@ -155,7 +155,7 @@ class _DriverHomeState extends State<DriverHome> {
                     ),
                     child: Text(
                       '${driver.available.length} nearby',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.signal,
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
@@ -166,7 +166,7 @@ class _DriverHomeState extends State<DriverHome> {
             ),
             const SizedBox(height: 12),
             if (driver.loading && driver.available.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 40),
                 child: Center(
                   child: CircularProgressIndicator(color: AppColors.signal),
@@ -303,7 +303,7 @@ class _AvailabilityHero extends StatelessWidget {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         gradient: isAvailable
-            ? const LinearGradient(
+            ? LinearGradient(
                 colors: [Color(0xFFFFC44D), AppColors.signal],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
