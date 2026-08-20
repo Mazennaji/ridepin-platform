@@ -76,8 +76,10 @@ class _LoginScreenState extends State<LoginScreen> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 420),
                   child: Form(
@@ -100,7 +102,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Text(
                           'Sign in to book a ride or hit the road.',
                           style: TextStyle(
-                              color: AppColors.textDim, fontSize: 15),
+                            color: AppColors.textDim,
+                            fontSize: 15,
+                          ),
                         ),
                         const SizedBox(height: 36),
                         _FieldLabel('EMAIL'),
@@ -111,8 +115,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: const TextStyle(color: AppColors.text),
                           decoration: const InputDecoration(
                             hintText: 'you@example.com',
-                            prefixIcon: Icon(Icons.mail_outline,
-                                color: AppColors.textFaint, size: 20),
+                            prefixIcon: Icon(
+                              Icons.mail_outline,
+                              color: AppColors.textFaint,
+                              size: 20,
+                            ),
                           ),
                           validator: (v) => (v == null || !v.contains('@'))
                               ? 'Enter a valid email'
@@ -127,8 +134,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: const TextStyle(color: AppColors.text),
                           decoration: InputDecoration(
                             hintText: '••••••••',
-                            prefixIcon: const Icon(Icons.lock_outline,
-                                color: AppColors.textFaint, size: 20),
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                              color: AppColors.textFaint,
+                              size: 20,
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscure
@@ -161,11 +171,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: loading
                                   ? null
                                   : () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              const RegisterScreen(),
-                                        ),
+                                      MaterialPageRoute(
+                                        builder: (_) => const RegisterScreen(),
                                       ),
+                                    ),
                               child: const Text('Create account'),
                             ),
                           ],
@@ -202,8 +211,11 @@ class _Hero extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(Icons.navigation_rounded,
-              color: Color(0xFF1A1206), size: 38),
+          child: const Icon(
+            Icons.navigation_rounded,
+            color: Color(0xFF1A1206),
+            size: 38,
+          ),
         ),
         const SizedBox(height: 18),
         const Text(
