@@ -16,7 +16,7 @@ class MapPickerScreen extends StatefulWidget {
 }
 
 class _MapPickerScreenState extends State<MapPickerScreen> {
-  static const _initial = LatLng(33.8886, 35.4955); // Beirut
+  static const _initial = LatLng(33.8886, 35.4955);
 
   LatLng? _pickup;
   LatLng? _dropoff;
@@ -33,6 +33,11 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       }
     });
   }
+
+  void _reset() => setState(() {
+    _pickup = null;
+    _dropoff = null;
+  });
 
   Set<Marker> get _markers {
     final m = <Marker>{};
@@ -76,15 +81,25 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   }
 
   String get _hint {
-    if (_pickup == null) return 'Tap the map to set your pickup point';
+    if (_pickup == null) return 'Tap the map to set your pickup';
     if (_dropoff == null) return 'Now tap to set your destination';
-    return 'Tap "Use these" to continue, or tap again to reset';
+    return 'Looks good — confirm below or reset';
   }
+
+  String _fmt(LatLng? p) => p == null
+      ? 'Not set'
+      : '${p.latitude.toStringAsFixed(4)}, ${p.longitude.toStringAsFixed(4)}';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pick locations')),
+      appBar: AppBar(
+        title: const Text('Pick locations'),
+        actions: [
+          if (_pickup != null || _dropoff != null)
+            TextButton(onPressed: _reset, child: const Text('Reset')),
+        ],
+      ),
       body: Stack(
         children: [
           GoogleMap(
@@ -97,49 +112,196 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             onTap: _onTap,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
+            mapToolbarEnabled: false,
           ),
+          // Hint pill
           Positioned(
             top: 16,
             left: 16,
             right: 16,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: AppColors.bg.withValues(alpha: 0.92),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.line),
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.touch_app,
-                    size: 18,
-                    color: AppColors.signal,
-                  ),
+                  Icon(Icons.touch_app, size: 18, color: AppColors.signal),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       _hint,
-                      style: TextStyle(
-                        color: AppColors.text,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: AppColors.text, fontSize: 13),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          if (_pickup != null && _dropoff != null)
+          // Bottom summary sheet
+          if (_pickup != null)
             Positioned(
-              bottom: 24,
-              left: 16,
-              right: 16,
-              child: ElevatedButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).pop(PickedLocations(pickup: _pickup!, dropoff: _dropoff!)),
-                child: const Text('Use these locations'),
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(24),
+                  ),
+                  border: Border.all(color: AppColors.line),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 24,
+                      offset: const Offset(0, -6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          children: [
+                            Container(
+                              width: 11,
+                              height: 11,
+                              decoration: BoxDecoration(
+                                color: AppColors.bg,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.signal,
+                                  width: 2.5,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 2,
+                              height: 30,
+                              color: AppColors.line,
+                            ),
+                            Icon(
+                              Icons.location_on,
+                              size: 16,
+                              color: AppColors.danger,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'PICKUP',
+                                style: TextStyle(
+                                  color: AppColors.textFaint,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              Text(
+                                _fmt(_pickup),
+                                style: TextStyle(
+                                  color: AppColors.text,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'DROP-OFF',
+                                style: TextStyle(
+                                  color: AppColors.textFaint,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              Text(
+                                _fmt(_dropoff),
+                                style: TextStyle(
+                                  color: _dropoff == null
+                                      ? AppColors.textFaint
+                                      : AppColors.text,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    if (_pickup != null && _dropoff != null)
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          gradient: LinearGradient(
+                            colors: [Color(0xFFFFC44D), AppColors.signal],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.signal.withValues(alpha: 0.4),
+                              blurRadius: 20,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => Navigator.of(context).pop(
+                              PickedLocations(
+                                pickup: _pickup!,
+                                dropoff: _dropoff!,
+                              ),
+                            ),
+                            borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              height: 54,
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              child: const Text(
+                                'Use these locations',
+                                style: TextStyle(
+                                  color: Color(0xFF1A1206),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      Container(
+                        height: 54,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceAlt,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Text(
+                          'Tap to set your destination',
+                          style: TextStyle(
+                            color: AppColors.textDim,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
         ],
