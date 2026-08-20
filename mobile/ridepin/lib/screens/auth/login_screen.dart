@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -11,14 +12,33 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen>
+    with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _obscure = true;
 
+  late final AnimationController _entrance;
+  late final AnimationController _glow;
+
+  @override
+  void initState() {
+    super.initState();
+    _entrance = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    )..forward();
+    _glow = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+  }
+
   @override
   void dispose() {
+    _entrance.dispose();
+    _glow.dispose();
     _email.dispose();
     _password.dispose();
     super.dispose();
@@ -45,33 +65,39 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Ambient gradient backdrop
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF12161F), AppColors.bg],
+                colors: [AppColors.surface, AppColors.bg],
               ),
             ),
           ),
-          // Soft signal glow, top-left
-          Positioned(
-            top: -80,
-            left: -60,
-            child: Container(
-              width: 260,
-              height: 260,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.signal.withValues(alpha: 0.18),
-                    AppColors.signal.withValues(alpha: 0.0),
-                  ],
+          // Animated pulsing glow
+          AnimatedBuilder(
+            animation: _glow,
+            builder: (context, _) {
+              return Positioned(
+                top: -90,
+                left: -70,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.signal.withValues(
+                          alpha: 0.10 + 0.12 * _glow.value,
+                        ),
+                        AppColors.signal.withValues(alpha: 0.0),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
           SafeArea(
             child: Center(
@@ -82,84 +108,96 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 420),
-                  child: Form(
-                    key: _formKey,
+                  child: _Animated(
+                    controller: _entrance,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _Hero(),
-                        const SizedBox(height: 40),
-                        Text(
-                          'Welcome back',
-                          style: TextStyle(
-                            color: AppColors.text,
-                            fontSize: 32,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.9,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Sign in to book a ride or hit the road.',
-                          style: TextStyle(
-                            color: AppColors.textDim,
-                            fontSize: 15,
-                          ),
-                        ),
+                        _GlowingMark(glow: _glow),
                         const SizedBox(height: 36),
-                        _FieldLabel('EMAIL'),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          controller: _email,
-                          keyboardType: TextInputType.emailAddress,
-                          style: TextStyle(color: AppColors.text),
-                          decoration: InputDecoration(
-                            hintText: 'you@example.com',
-                            prefixIcon: Icon(
-                              Icons.mail_outline,
-                              color: AppColors.textFaint,
-                              size: 20,
+                        _GlassCard(
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  'Welcome back',
+                                  style: TextStyle(
+                                    color: AppColors.text,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.8,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Sign in to book or drive.',
+                                  style: TextStyle(
+                                    color: AppColors.textDim,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+                                _label('EMAIL'),
+                                const SizedBox(height: 8),
+                                TextFormField(
+                                  controller: _email,
+                                  keyboardType: TextInputType.emailAddress,
+                                  style: TextStyle(color: AppColors.text),
+                                  decoration: InputDecoration(
+                                    hintText: 'you@example.com',
+                                    prefixIcon: Icon(
+                                      Icons.mail_outline,
+                                      color: AppColors.textFaint,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  validator: (v) =>
+                                      (v == null || !v.contains('@'))
+                                      ? 'Enter a valid email'
+                                      : null,
+                                ),
+                                const SizedBox(height: 18),
+                                _label('PASSWORD'),
+                                const SizedBox(height: 8),
+                                TextFormField(
+                                  controller: _password,
+                                  obscureText: _obscure,
+                                  style: TextStyle(color: AppColors.text),
+                                  decoration: InputDecoration(
+                                    hintText: '••••••••',
+                                    prefixIcon: Icon(
+                                      Icons.lock_outline,
+                                      color: AppColors.textFaint,
+                                      size: 20,
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscure
+                                            ? Icons.visibility_outlined
+                                            : Icons.visibility_off_outlined,
+                                        color: AppColors.textFaint,
+                                      ),
+                                      onPressed: () =>
+                                          setState(() => _obscure = !_obscure),
+                                    ),
+                                  ),
+                                  validator: (v) => (v == null || v.isEmpty)
+                                      ? 'Enter your password'
+                                      : null,
+                                ),
+                                const SizedBox(height: 28),
+                                _GlowButton(
+                                  loading: loading,
+                                  label: 'Sign in',
+                                  onPressed: loading ? null : _submit,
+                                ),
+                              ],
                             ),
                           ),
-                          validator: (v) => (v == null || !v.contains('@'))
-                              ? 'Enter a valid email'
-                              : null,
                         ),
-                        const SizedBox(height: 18),
-                        _FieldLabel('PASSWORD'),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          controller: _password,
-                          obscureText: _obscure,
-                          style: TextStyle(color: AppColors.text),
-                          decoration: InputDecoration(
-                            hintText: '••••••••',
-                            prefixIcon: Icon(
-                              Icons.lock_outline,
-                              color: AppColors.textFaint,
-                              size: 20,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscure
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                                color: AppColors.textFaint,
-                              ),
-                              onPressed: () =>
-                                  setState(() => _obscure = !_obscure),
-                            ),
-                          ),
-                          validator: (v) => (v == null || v.isEmpty)
-                              ? 'Enter your password'
-                              : null,
-                        ),
-                        const SizedBox(height: 32),
-                        _GlowButton(
-                          loading: loading,
-                          onPressed: loading ? null : _submit,
-                        ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -190,62 +228,96 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+  Widget _label(String text) => Padding(
+    padding: const EdgeInsets.only(left: 4),
+    child: Text(
+      text,
+      style: TextStyle(
+        color: AppColors.textFaint,
+        fontSize: 11,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 1.4,
+      ),
+    ),
+  );
 }
 
-class _Hero extends StatelessWidget {
+class _Animated extends StatelessWidget {
+  final AnimationController controller;
+  final Widget child;
+  const _Animated({required this.controller, required this.child});
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            color: AppColors.signal,
-            borderRadius: BorderRadius.circular(22),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.signal.withValues(alpha: 0.45),
-                blurRadius: 32,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.navigation_rounded,
-            color: Color(0xFF1A1206),
-            size: 38,
-          ),
-        ),
-        const SizedBox(height: 18),
-        Text(
-          'RidePin',
-          style: TextStyle(
-            color: AppColors.text,
-            fontSize: 26,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.5,
-          ),
-        ),
-      ],
+    final fade = CurvedAnimation(parent: controller, curve: Curves.easeOut);
+    final slide = Tween<Offset>(
+      begin: const Offset(0, 0.06),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOutCubic));
+    return FadeTransition(
+      opacity: fade,
+      child: SlideTransition(position: slide, child: child),
     );
   }
 }
 
-class _FieldLabel extends StatelessWidget {
-  final String text;
-  const _FieldLabel(this.text);
+class _GlowingMark extends StatelessWidget {
+  final AnimationController glow;
+  const _GlowingMark({required this.glow});
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: AppColors.textFaint,
-          fontSize: 11,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 1.4,
+    return Center(
+      child: AnimatedBuilder(
+        animation: glow,
+        builder: (context, _) {
+          return Container(
+            width: 74,
+            height: 74,
+            decoration: BoxDecoration(
+              color: AppColors.signal,
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.signal.withValues(
+                    alpha: 0.35 + 0.25 * glow.value,
+                  ),
+                  blurRadius: 28 + 16 * glow.value,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.navigation_rounded,
+              color: Color(0xFF1A1206),
+              size: 38,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _GlassCard extends StatelessWidget {
+  final Widget child;
+  const _GlassCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppColors.surface.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.line.withValues(alpha: 0.8)),
+          ),
+          child: child,
         ),
       ),
     );
@@ -254,8 +326,13 @@ class _FieldLabel extends StatelessWidget {
 
 class _GlowButton extends StatelessWidget {
   final bool loading;
+  final String label;
   final VoidCallback? onPressed;
-  const _GlowButton({required this.loading, required this.onPressed});
+  const _GlowButton({
+    required this.loading,
+    required this.label,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -266,7 +343,7 @@ class _GlowButton extends StatelessWidget {
             ? []
             : [
                 BoxShadow(
-                  color: AppColors.signal.withValues(alpha: 0.35),
+                  color: AppColors.signal.withValues(alpha: 0.4),
                   blurRadius: 24,
                   offset: const Offset(0, 6),
                 ),
@@ -283,7 +360,7 @@ class _GlowButton extends StatelessWidget {
                   color: Color(0xFF1A1206),
                 ),
               )
-            : const Text('Sign in'),
+            : Text(label),
       ),
     );
   }
