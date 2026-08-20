@@ -154,6 +154,8 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
     return '$d at $t';
   }
 
+  bool get _hasLocations => _pickupLatLng != null && _dropoffLatLng != null;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,110 +163,200 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
+              constraints: const BoxConstraints(maxWidth: 480),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Map picker button
                     GestureDetector(
                       onTap: _openMap,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
-                            color: _pickupLatLng != null
+                            color: _hasLocations
                                 ? AppColors.signal
                                 : AppColors.line,
                           ),
+                          boxShadow: _hasLocations
+                              ? [
+                                  BoxShadow(
+                                    color: AppColors.signal.withValues(
+                                      alpha: 0.18,
+                                    ),
+                                    blurRadius: 18,
+                                    offset: const Offset(0, 6),
+                                  ),
+                                ]
+                              : [],
                         ),
                         child: Row(
                           children: [
-                            Icon(
-                              Icons.map_outlined,
-                              color: AppColors.signal,
+                            Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: AppColors.signal.withValues(alpha: 0.14),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.map_outlined,
+                                color: AppColors.signal,
+                                size: 22,
+                              ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
-                              child: Text(
-                                _pickupLatLng == null
-                                    ? 'Choose pickup & drop-off on map'
-                                    : 'Locations set — tap to change',
-                                style: TextStyle(
-                                  color: AppColors.text,
-                                  fontWeight: FontWeight.w600,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _hasLocations
+                                        ? 'Locations set'
+                                        : 'Choose on map',
+                                    style: TextStyle(
+                                      color: AppColors.text,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    _hasLocations
+                                        ? 'Tap to adjust pickup & drop-off'
+                                        : 'Set your pickup & destination',
+                                    style: TextStyle(
+                                      color: AppColors.textDim,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(Icons.chevron_right, color: AppColors.textDim),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Route labels card with route-line
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: AppColors.line),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            children: [
+                              Container(
+                                width: 11,
+                                height: 11,
+                                decoration: BoxDecoration(
+                                  color: AppColors.bg,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.signal,
+                                    width: 2.5,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Icon(
-                              Icons.chevron_right,
-                              color: AppColors.textDim,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _pickup,
-                      style: TextStyle(color: AppColors.text),
-                      decoration: const InputDecoration(
-                        hintText: 'Pickup label',
-                      ),
-                      validator: (v) => (v == null || v.trim().isEmpty)
-                          ? 'Enter a pickup'
-                          : null,
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _dropoff,
-                      style: TextStyle(color: AppColors.text),
-                      decoration: const InputDecoration(
-                        hintText: 'Drop-off label',
-                      ),
-                      validator: (v) => (v == null || v.trim().isEmpty)
-                          ? 'Enter a destination'
-                          : null,
-                    ),
-                    const SizedBox(height: 16),
-                    if (_estimating)
-                      Container(
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.line),
-                        ),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.signal,
+                              Container(
+                                width: 2,
+                                height: 44,
+                                color: AppColors.line,
                               ),
+                              Icon(
+                                Icons.location_on,
+                                size: 16,
+                                color: AppColors.danger,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  controller: _pickup,
+                                  style: TextStyle(color: AppColors.text),
+                                  decoration: InputDecoration(
+                                    hintText: 'Pickup label',
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    filled: false,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  validator: (v) =>
+                                      (v == null || v.trim().isEmpty)
+                                      ? 'Enter a pickup'
+                                      : null,
+                                ),
+                                Divider(color: AppColors.line, height: 22),
+                                TextFormField(
+                                  controller: _dropoff,
+                                  style: TextStyle(color: AppColors.text),
+                                  decoration: InputDecoration(
+                                    hintText: 'Drop-off label',
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    filled: false,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  validator: (v) =>
+                                      (v == null || v.trim().isEmpty)
+                                      ? 'Enter a destination'
+                                      : null,
+                                ),
+                              ],
                             ),
-                            SizedBox(width: 12),
-                            Text(
-                              'Estimating fare…',
-                              style: TextStyle(color: AppColors.textDim),
-                            ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Fare estimate
+                    if (_estimating)
+                      _infoTile(
+                        leading: SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.signal,
+                          ),
                         ),
+                        text: 'Estimating fare…',
                       )
                     else if (_estimate != null)
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                          color: AppColors.signal.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(14),
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.signal.withValues(alpha: 0.16),
+                              AppColors.signal.withValues(alpha: 0.06),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: AppColors.signal.withValues(alpha: 0.35),
+                            color: AppColors.signal.withValues(alpha: 0.4),
                           ),
                         ),
                         child: Row(
@@ -294,28 +386,33 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                               '\$${_estimate!.fare.toStringAsFixed(2)}',
                               style: TextStyle(
                                 color: AppColors.text,
-                                fontSize: 22,
+                                fontSize: 24,
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    const SizedBox(height: 16),
+                    if (_estimating || _estimate != null)
+                      const SizedBox(height: 16),
+                    // Schedule
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: AppColors.line),
                       ),
                       child: Column(
                         children: [
                           SwitchListTile(
                             contentPadding: EdgeInsets.zero,
+                            secondary: Icon(
+                              Icons.schedule,
+                              color: _scheduleLater
+                                  ? AppColors.signal
+                                  : AppColors.textDim,
+                            ),
                             title: Text(
                               'Schedule for later',
                               style: TextStyle(
@@ -332,7 +429,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                           ),
                           if (_scheduleLater)
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.only(bottom: 12),
                               child: GestureDetector(
                                 onTap: _pickDateTime,
                                 child: Container(
@@ -348,7 +445,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                                   child: Row(
                                     children: [
                                       Icon(
-                                        Icons.schedule,
+                                        Icons.event,
                                         size: 18,
                                         color: AppColors.signal,
                                       ),
@@ -357,9 +454,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                                         _scheduledAt == null
                                             ? 'Pick date & time'
                                             : _formatDateTime(_scheduledAt!),
-                                        style: TextStyle(
-                                          color: AppColors.text,
-                                        ),
+                                        style: TextStyle(color: AppColors.text),
                                       ),
                                     ],
                                   ),
@@ -370,22 +465,57 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                       ),
                     ),
                     const SizedBox(height: 28),
-                    ElevatedButton(
-                      onPressed: _submitting ? null : _submit,
-                      child: _submitting
-                          ? const SizedBox(
-                              height: 22,
-                              width: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.4,
-                                color: Color(0xFF1A1206),
-                              ),
-                            )
-                          : Text(
-                              _scheduleLater
-                                  ? 'Schedule ride'
-                                  : 'Confirm booking',
-                            ),
+                    // Confirm button — gradient + glow
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        gradient: LinearGradient(
+                          colors: [Color(0xFFFFC44D), AppColors.signal],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: _submitting
+                            ? []
+                            : [
+                                BoxShadow(
+                                  color: AppColors.signal.withValues(
+                                    alpha: 0.4,
+                                  ),
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _submitting ? null : _submit,
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            height: 56,
+                            alignment: Alignment.center,
+                            child: _submitting
+                                ? const SizedBox(
+                                    height: 22,
+                                    width: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.4,
+                                      color: Color(0xFF1A1206),
+                                    ),
+                                  )
+                                : Text(
+                                    _scheduleLater
+                                        ? 'Schedule ride'
+                                        : 'Confirm booking',
+                                    style: const TextStyle(
+                                      color: Color(0xFF1A1206),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -393,6 +523,24 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _infoTile({required Widget leading, required String text}) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.line),
+      ),
+      child: Row(
+        children: [
+          leading,
+          const SizedBox(width: 12),
+          Text(text, style: TextStyle(color: AppColors.textDim)),
+        ],
       ),
     );
   }
