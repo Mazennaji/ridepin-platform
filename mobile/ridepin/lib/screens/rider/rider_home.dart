@@ -5,9 +5,9 @@ import '../../models/ride.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/ride_provider.dart';
 import '../../widgets/brand.dart';
-import '../profile/profile_screen.dart';
 import '../../widgets/route_line.dart';
 import '../../widgets/status_pill.dart';
+import '../profile/profile_screen.dart';
 import 'request_ride_screen.dart';
 import 'ride_detail_screen.dart';
 
@@ -36,13 +36,18 @@ class _RiderHomeState extends State<RiderHome> {
         .where((r) => r.isCompleted || r.isCancelled)
         .toList();
 
+    final completed = rides.rides.where((r) => r.isCompleted).length;
+    final spent = rides.rides
+        .where((r) => r.transaction?.paymentStatus == 'paid')
+        .fold(0.0, (s, r) => s + (r.transaction?.amount ?? 0));
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 20,
         title: const BrandMark(size: 30),
         actions: [
           IconButton(
-            icon: Icon(Icons.person_outline, color: AppColors.textDim),
+            icon: const Icon(Icons.person_outline, color: AppColors.textDim),
             onPressed: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
@@ -59,36 +64,50 @@ class _RiderHomeState extends State<RiderHome> {
           children: [
             Text(
               'Hi ${auth.user?.name.split(' ').first ?? ''}',
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.text,
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.6,
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              'Where are you headed?',
-              style: TextStyle(color: AppColors.textDim, fontSize: 15),
+            const SizedBox(height: 2),
+            const Text(
+              'Where are you headed today?',
+              style: TextStyle(color: AppColors.textDim, fontSize: 14),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                _stat('Trips', '$completed', Icons.route_outlined),
+                const SizedBox(width: 12),
+                _stat(
+                  'Spent',
+                  '\$${spent.toStringAsFixed(0)}',
+                  Icons.account_balance_wallet_outlined,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
             if (active != null) ...[
-              const _SectionLabel('Current ride'),
+              const _SectionLabel('CURRENT RIDE'),
               const SizedBox(height: 12),
               _RideCard(ride: active, onTap: () => _openDetail(active)),
               const SizedBox(height: 28),
-            ],
-            const _SectionLabel('History'),
+            ] else
+              _bookCta(),
+            const SizedBox(height: 28),
+            const _SectionLabel('HISTORY'),
             const SizedBox(height: 12),
             if (rides.loading && rides.rides.isEmpty)
-              Padding(
+              const Padding(
                 padding: EdgeInsets.only(top: 40),
                 child: Center(
                   child: CircularProgressIndicator(color: AppColors.signal),
                 ),
               )
             else if (history.isEmpty)
-              _Empty(active == null)
+              _empty()
             else
               ...history.map(
                 (r) => Padding(
@@ -111,6 +130,148 @@ class _RiderHomeState extends State<RiderHome> {
               onPressed: _openRequest,
             )
           : null,
+    );
+  }
+
+  Widget _bookCta() {
+    return GestureDetector(
+      onTap: _openRequest,
+      child: Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFFC44D), AppColors.signal],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.signal.withValues(alpha: 0.3),
+              blurRadius: 28,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: const Color(0x261A1206),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(
+                Icons.navigation_rounded,
+                color: Color(0xFF1A1206),
+              ),
+            ),
+            const SizedBox(width: 16),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Book a ride',
+                    style: TextStyle(
+                      color: Color(0xFF1A1206),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Set your route and get a fare',
+                    style: TextStyle(color: Color(0xCC1A1206), fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward, color: Color(0xFF1A1206)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _stat(String label, String value, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.line),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: AppColors.signal),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: AppColors.text,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(color: AppColors.textDim, fontSize: 12),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _empty() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 44, horizontal: 24),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.line),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceAlt,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.route_outlined,
+              color: AppColors.textDim,
+              size: 26,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No rides yet',
+            style: TextStyle(
+              color: AppColors.text,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Book your first ride to get moving.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.textDim, fontSize: 14),
+          ),
+        ],
+      ),
     );
   }
 
@@ -137,7 +298,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text.toUpperCase(),
+      text,
       style: TextStyle(
         color: AppColors.textFaint,
         fontSize: 11,
@@ -194,7 +355,7 @@ class _RideCard extends StatelessWidget {
                               size: 12,
                               color: AppColors.info,
                             ),
-                            SizedBox(width: 5),
+                            const SizedBox(width: 5),
                             Text(
                               'Scheduled',
                               style: TextStyle(
@@ -226,47 +387,6 @@ class _RideCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Empty extends StatelessWidget {
-  final bool showHint;
-  const _Empty(this.showHint);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 44, horizontal: 20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.line),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.route_outlined,
-            color: AppColors.textFaint,
-            size: 34,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'No rides yet',
-            style: TextStyle(
-              color: AppColors.text,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            showHint ? 'Book your first ride to get moving.' : '',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textDim, fontSize: 14),
-          ),
-        ],
       ),
     );
   }
